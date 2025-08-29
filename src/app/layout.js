@@ -1,5 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "../components/Providers";
+import Navbar from "../components/Navbar";
+import { Card } from "../components/ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +25,34 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          <Navbar />
+          <div className="min-h-[calc(100vh-200px)] bg-gray-50/60">
+            {children}
+          </div>
+          <footer className="border-t bg-white text-gray-900">
+            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+              <div className="grid gap-6 sm:grid-cols-3">
+                <div>
+                  <p className="text-sm font-semibold">Journal</p>
+                  <p className="mt-2 text-sm text-gray-600">A modern open-access academic journal.</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Contact</p>
+                  <p className="mt-2 text-sm text-gray-600">contact@example.com</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Follow</p>
+                  <div className="mt-2 flex items-center gap-3 text-sm text-gray-600">
+                    <a href="#" aria-label="Twitter">Twitter</a>
+                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-8 text-xs text-gray-500">© {new Date().getFullYear()} Journal. All rights reserved.</p>
+            </div>
+          </footer>
+        </Providers>
       </body>
     </html>
   );
