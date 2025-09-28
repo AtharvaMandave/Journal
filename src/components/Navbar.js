@@ -163,11 +163,13 @@ function NavLinks({ onClick, mobile }) {
         </DropdownButton>
         <DropdownMenu isOpen={aboutOpen}>
           <DropdownLink href="/about">About Journal</DropdownLink>
-          <DropdownLink href="/aims-scope">Aims & Scope</DropdownLink>
+          <DropdownLink href="/editorial-vision">Editorial Vision</DropdownLink>
+           <DropdownLink href="/editorial-board">Editorial Board</DropdownLink>
           <DropdownLink href="/ethics">Publication Ethics</DropdownLink>
           <DropdownLink href="/peer-review">Peer Review Process</DropdownLink>
-          <DropdownLink href="/indexing">Indexing & Abstracting</DropdownLink>
-          <DropdownLink href="/copyright">Copyright Policy</DropdownLink>
+          <DropdownLink href="/joinAsReviewer">Join as Reviewer</DropdownLink>
+          <DropdownLink href="/privacyPolicies">Privacy Policies</DropdownLink>
+          <DropdownLink href="/termsConditions">Terms & Conditions</DropdownLink>
         </DropdownMenu>
       </NavItem>
 
@@ -217,7 +219,7 @@ function NavLinks({ onClick, mobile }) {
         <DropdownMenu isOpen={archivesOpen}>
           <DropdownLink href="/current-issue">Current Issue</DropdownLink>
           <DropdownLink href="/archives">Past Issues</DropdownLink>
-          <DropdownLink href="/call-for-papers">Call for Papers</DropdownLink>
+          <DropdownLink href="/searchPapers">Search for papers</DropdownLink>
         </DropdownMenu>
       </NavItem>
 

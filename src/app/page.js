@@ -36,7 +36,7 @@ export default function Home() {
             <p className="text-yellow-900 font-semibold">
               <strong>📢 Call for Papers:</strong> {cfp[0].title} 
               {cfp[0].deadline && ` — Deadline: ${new Date(cfp[0].deadline).toLocaleDateString()}`}
-              <Link href="/submit" className="ml-2 underline hover:no-underline">Submit Now</Link>
+              <Link href="/call-for-paper" className="ml-2 underline hover:no-underline">Submit Now</Link>
             </p>
           </div>
         </div>
@@ -135,9 +135,9 @@ export default function Home() {
               <div className="bg-green-600 text-white p-4 rounded-lg">
                 <h3 className="font-bold mb-3">FOR AUTHORS</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="#" className="hover:underline">📄 Call for Paper</Link></li>
-                  <li><Link href="#" className="hover:underline">📋 Publication Process</Link></li>
-                  <li><Link href="#" className="hover:underline">📝 Submit Paper Online</Link></li>
+                  <li><Link href="call-for-paper" className="hover:underline">📄 Call for Paper</Link></li>
+                  <li><Link href="/publication-process" className="hover:underline">📋 Publication Process</Link></li>
+                  <li><Link href="/submit" className="hover:underline">📝 Submit Paper Online</Link></li>
                   <li><Link href="#" className="hover:underline">💳 Pay Publication Fee</Link></li>
                   <li><Link href="#" className="hover:underline">📑 Paper Format</Link></li>
                   <li><Link href="#" className="hover:underline">📋 Copyright Form</Link></li>

@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff; /* white */
-  --foreground: #111827; /* gray-900 for strong contrast */
+  --foreground: #ffffff; /* gray-900 for strong contrast */
 }
 
 @theme inline {
@@ -14,8 +14,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a; /* near-black */
-    --foreground: #e5e7eb; /* gray-200 for dark mode foreground */
+    --background: #ffffff; /* near-black */
+    --foreground: #ffffff; /* gray-200 for dark mode foreground */
   }
 }
 
