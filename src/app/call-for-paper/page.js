@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 const CallForPaper = () => {
   return (
@@ -44,9 +45,9 @@ const CallForPaper = () => {
 
       {/* Submit Button */}
       <div className="text-center">
-        <button className="bg-cyan-400 hover:bg-cyan-500 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-200 text-lg">
+       <Link href='/submit'> <button className="bg-cyan-400 hover:bg-cyan-500 text-white font-medium px-8 py-3 rounded-lg transition-colors duration-200 text-lg">
           Submit Your Paper Now
-        </button>
+        </button></Link>
       </div>
     </div>
   );

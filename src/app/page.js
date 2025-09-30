@@ -138,7 +138,7 @@ export default function Home() {
                   <li><Link href="call-for-paper" className="hover:underline">📄 Call for Paper</Link></li>
                   <li><Link href="/publication-process" className="hover:underline">📋 Publication Process</Link></li>
                   <li><Link href="/submit" className="hover:underline">📝 Submit Paper Online</Link></li>
-                  <li><Link href="#" className="hover:underline">💳 Pay Publication Fee</Link></li>
+                  <li><Link href="/publication-fees" className="hover:underline">💳 Pay Publication Fee</Link></li>
                   <li><Link href="#" className="hover:underline">📑 Paper Format</Link></li>
                   <li><Link href="#" className="hover:underline">📋 Copyright Form</Link></li>
                   <li><Link href="#" className="hover:underline">🔍 Track Paper</Link></li>

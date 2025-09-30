@@ -3,9 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import mongooseModule from "../../../../../lib/mongoose";
 import paperModule from "../../../../../models/Paper";
+import userModule from "../../../../../models/User";
+import { sendMail } from "../../../../../lib/email";
 
 const { connect } = mongooseModule;
 const { PaperModel, PAPER_STATUSES } = paperModule;
+const { UserModel } = userModule;
 
 const ALLOWED = new Set(["accepted", "rejected", "revise", "published"]);
 
@@ -21,6 +24,22 @@ export async function POST(request) {
   await connect();
   const updated = await PaperModel.findByIdAndUpdate(paperId, { status: decision }, { new: true });
   if (!updated) return NextResponse.json({ error: "Paper not found" }, { status: 404 });
+  // Notify corresponding author (best-effort)
+  try {
+    const author = await UserModel.findById(updated.correspondingAuthor).select("email name");
+    if (author?.email) {
+      const subject = `Decision on your submission: ${updated.title}`;
+      const body =
+        decision === "accepted"
+          ? "Your paper has been accepted."
+          : decision === "revise"
+          ? "Please revise your paper and resubmit."
+          : decision === "rejected"
+          ? "We regret to inform you your paper was not accepted."
+          : `Status updated: ${decision}`;
+      await sendMail({ to: author.email, subject, html: `<p>Dear ${author.name || "Author"},</p><p>${body}</p>` }).catch(() => {});
+    }
+  } catch {}
   return NextResponse.json({ ok: true, status: updated.status });
 }
 

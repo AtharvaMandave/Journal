@@ -111,4 +111,62 @@ export async function POST(request) {
       return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
   }
+
+export async function PATCH(request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const UpdateSchema = PaperInputSchema.extend({ id: z.string() });
+    const parsed = UpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const { id, title, abstract, keywords, authors, correspondingAuthorEmail, file, fileUrl } = parsed.data;
+    await connect();
+
+    // Verify paper ownership and status
+    const paper = await PaperModel.findById(id);
+    if (!paper) return NextResponse.json({ error: "Paper not found" }, { status: 404 });
+    if (String(paper.correspondingAuthor) !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (paper.status !== "revise") {
+      return NextResponse.json({ error: "Can only resubmit when status is 'revise'" }, { status: 400 });
+    }
+
+    // Handle optional new file upload via presigned URL request
+    let newFileUrl = fileUrl || paper.fileUrl || "";
+    if (file) {
+      const key = `papers/${paper.correspondingAuthor}/${uuidv4()}-${file.name}`;
+      const bucket = process.env.R2_BUCKET || process.env.S3_BUCKET;
+      if (!bucket) throw new Error("R2_BUCKET (or S3_BUCKET) not configured");
+      const uploadUrl = await createPresignedUploadUrl({ bucket, key, contentType: file.type });
+      if (process.env.R2_PUBLIC_DOMAIN) newFileUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`;
+      else if (process.env.R2_ACCOUNT_ID) newFileUrl = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${bucket}/${key}`;
+      else if (process.env.AWS_REGION) newFileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+      return NextResponse.json({ uploadUrl, fileUrl: newFileUrl });
+    }
+
+    // Update paper metadata and reset workflow to submitted
+    paper.title = title;
+    paper.abstract = abstract;
+    paper.keywords = keywords || [];
+    paper.authors = authors;
+    paper.fileUrl = newFileUrl || undefined;
+    paper.status = "submitted";
+    paper.assignedReviewers = [];
+    paper.reviews = [];
+    await paper.save();
+
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("API error:", e);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+}
   

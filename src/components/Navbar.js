@@ -184,7 +184,7 @@ function NavLinks({ onClick, mobile }) {
         </DropdownButton>
         <DropdownMenu isOpen={authorOpen}>
           <DropdownLink href="/submit">Submit Paper Online</DropdownLink>
-          <DropdownLink href="/guidelines">Author Guidelines</DropdownLink>
+          {/* <DropdownLink href="/guidelines">Author Guidelines</DropdownLink> */}
           <DropdownLink href="/check-status">Track Paper Status</DropdownLink>
           <DropdownLink href="/paper-format">Paper Format</DropdownLink>
           <DropdownLink href="/copyright-form">Copyright Form</DropdownLink>
@@ -194,15 +194,15 @@ function NavLinks({ onClick, mobile }) {
       </NavItem>
 
       {/* Indexing */}
-      <NavItem>
+      {/* <NavItem>
         <NavLink href="/indexing" icon={FileText}>
           Indexing
         </NavLink>
-      </NavItem>
+      </NavItem> */}
 
       {/* Fee */}
       <NavItem>
-        <NavLink href="/publication-fee" icon={DollarSign}>
+        <NavLink href="/publication-fees" icon={DollarSign}>
           Fee
         </NavLink>
       </NavItem>

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, CheckCircle, XCircle, FileText, Award, Globe } from 'lucide-react';
+import Link from 'next/link';
 
 const PublicationProcess = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -179,9 +180,9 @@ const PublicationProcess = () => {
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-8 max-w-2xl mx-auto shadow-xl">
             <h3 className="text-2xl font-bold mb-4">Ready to Start Your Publication Journey?</h3>
             <p className="mb-6 opacity-90">Join thousands of researchers who have successfully published with us</p>
-            <button className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+           <Link href='/submit'> <button className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
               Submit Your Paper Now
-            </button>
+            </button></Link>
           </div>
         </div>
 

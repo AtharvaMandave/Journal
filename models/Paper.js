@@ -35,6 +35,20 @@ const PaperSchema = new Schema(
   { timestamps: true }
 );
 
+// Indexes to speed up common queries and sorts
+// Lists and filters
+PaperSchema.index({ status: 1, createdAt: -1 });
+PaperSchema.index({ correspondingAuthor: 1, createdAt: -1 });
+PaperSchema.index({ assignedReviewers: 1, createdAt: -1 });
+PaperSchema.index({ issueId: 1, createdAt: -1 });
+PaperSchema.index({ createdAt: -1 });
+
+// Text index for archive/search pages
+// Note: text index on array field (keywords) is supported in MongoDB
+try {
+  PaperSchema.index({ title: "text", abstract: "text", keywords: "text" }, { weights: { title: 5, abstract: 2, keywords: 1 } });
+} catch {}
+
 const PaperModel = mongoose.models.Paper || mongoose.model("Paper", PaperSchema);
 
 module.exports = { PAPER_STATUSES, PaperModel };

@@ -28,23 +28,20 @@ export async function GET() {
     ]),
   ]);
 
-  // naive country parsing from affiliation (last comma token)
-  const byCountryAgg = await PaperModel.aggregate([
-    { $match: { createdAt: { $gte: since } } },
-    { $project: { country: { $trim: { input: { $arrayElemAt: [ { $split: [ "$abstract", "," ] }, -1 ] } } } } },
-    { $group: { _id: "$country", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $limit: 10 },
-  ]);
+  // Lighten expensive aggregation; make it optional later if needed
+  let byCountryAgg = [];
 
   const acceptanceRate = total ? (await PaperModel.countDocuments({ status: "accepted" })) / total : 0;
-  return NextResponse.json({
+  const res = NextResponse.json({
     submissionsLast30: submissions,
     acceptedLast30: accepted,
     acceptanceRate,
     topReviewerActivity: reviews.map((r) => ({ reviewerId: String(r._id), count: r.count })),
     papersByCountry: byCountryAgg.filter((x) => x._id).map((x) => ({ country: x._id, count: x.count })),
   });
+  // Cache admin metrics briefly (private caches only)
+  res.headers.set("Cache-Control", "private, max-age=30, stale-while-revalidate=60");
+  return res;
 }
 
 

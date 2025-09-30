@@ -12,26 +12,23 @@ export async function GET(request) {
 
     await connect();
 
-    const query = {
-      status: "accepted",
-      ...(q
-        ? {
-            $or: [
-              { title: new RegExp(q, "i") },
-              { abstract: new RegExp(q, "i") },
-              { keywords: new RegExp(q, "i") },
-            ],
-          }
-        : {}),
-    };
+    // Use text search when a query is provided (requires text index)
+    const findFilter = q
+      ? { $text: { $search: q }, status: "accepted" }
+      : { status: "accepted" };
 
-    const papers = await PaperModel.find(query)
+    const projection = q ? { score: { $meta: "textScore" }, title: 1, fileUrl: 1, createdAt: 1 } : { title: 1, fileUrl: 1, createdAt: 1 };
+
+    const sortSpec = q ? { score: { $meta: "textScore" }, createdAt: -1 } : { createdAt: -1 };
+
+    const papers = await PaperModel.find(findFilter, projection)
+      .sort(sortSpec)
       .select("title fileUrl createdAt")
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();
 
-    return NextResponse.json(
+    const res = NextResponse.json(
       papers.map((p) => ({
         id: String(p._id),
         title: p.title,
@@ -39,6 +36,10 @@ export async function GET(request) {
         createdAt: p.createdAt,
       }))
     );
+
+    // Cache archives for 60s (public cache OK)
+    res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60, stale-while-revalidate=300");
+    return res;
   } catch (error) {
     console.error("Archives API error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
