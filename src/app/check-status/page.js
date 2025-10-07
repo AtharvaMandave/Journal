@@ -23,8 +23,8 @@ export default function CheckStatusPage() {
   }
 
   return (
-    <main className="p-8 sm:p-20">
-      <h1 className="text-2xl font-semibold">Check Paper Status</h1>
+    <main className="min-h-screen bg-gray-50 p-8 sm:p-20">
+      <h1 className="text-2xl font-semibold text-gray-900">Check Paper Status</h1>
       <Card className="mt-6 max-w-xl">
         <CardBody>
           <form onSubmit={submit} className="space-y-4">
@@ -41,7 +41,7 @@ export default function CheckStatusPage() {
           </form>
 
           {result ? (
-            <div className="mt-6 rounded-2xl border p-4">
+            <div className="mt-6 rounded-2xl border bg-white p-4 shadow-sm">
               <p className="text-sm text-gray-600">Title</p>
               <p className="font-medium">{result.title}</p>
               <div className="mt-3 flex items-center gap-2">

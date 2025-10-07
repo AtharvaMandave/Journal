@@ -26,7 +26,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="p-8 sm:p-20 bg-black text-white">
+    <main className="min-h-screen bg-gray-50 p-8 sm:p-20 text-gray-900">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
       {/* <Link href='/dashboard/admin-dash'>Admin Dashboard</Link> */}
       {session?.user ? (
@@ -38,8 +38,8 @@ export default function DashboardPage() {
       )}
 
       <button
-        onClick={() => signOut()}
-        className="mt-6 px-4 py-2 border rounded text-white hover:bg-gray-800"
+        onClick={() => signOut({ callbackUrl: "/" })}
+        className="mt-6 px-4 py-2 rounded border hover:bg-gray-100"
       >
         Sign out
       </button>
@@ -49,26 +49,21 @@ export default function DashboardPage() {
         <div className="mt-4 grid gap-3">
           {data && Array.isArray(data) && data.length > 0 ? (
             data.map((p) => (
-              <div key={p.id} className="rounded border p-4">
+              <div key={p.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{p.title}</p>
-                    <p className="text-sm text-gray-400">Status: {p.status}</p>
+                    <div className="mt-1 text-xs text-gray-600">
+                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1">Status: {p.status}</span>
+                    </div>
                   </div>
                   {p.fileUrl ? (
-                    <a
-                      className="text-sm underline"
-                      href={p.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      PDF
-                    </a>
+                    <a className="text-sm underline" href={p.fileUrl} target="_blank" rel="noreferrer">PDF</a>
                   ) : null}
                 </div>
                 {p.status === "revise" ? (
                   <div className="mt-3">
-                    <Link href={`/submit?revise=${p.id}`} className="rounded border px-3 py-1.5">Revise / Resubmit</Link>
+                    <Link href={`/submit?revise=${p.id}`} className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50">Revise / Resubmit</Link>
                   </div>
                 ) : null}
               </div>

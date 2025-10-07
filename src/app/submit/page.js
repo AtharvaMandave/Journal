@@ -5,8 +5,8 @@ import { Card, CardBody, Input, Label, Button } from "../../components/ui";
 import { getSupabaseClient } from "../../../lib/supabase";
 export default function SubmitPage() {
   return (
-    <main className="p-8 sm:p-20 bg-black">
-      <h1 className="text-2xl font-semibold">Submit a Paper</h1>
+    <main className="min-h-screen bg-gray-50 p-8 sm:p-20">
+      <h1 className="text-2xl font-semibold text-gray-900">Submit a Paper</h1>
       <Card className="mt-6 max-w-3xl">
         <CardBody>
           <Form />
@@ -181,10 +181,10 @@ function Form() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-      <textarea className="w-full rounded-2xl border px-3 py-2 text-black" rows={6} placeholder="Abstract" value={abstract} onChange={(e) => setAbstract(e.target.value)} required />
+      <textarea className="w-full rounded-2xl border px-3 py-2 text-gray-900" rows={6} placeholder="Abstract" value={abstract} onChange={(e) => setAbstract(e.target.value)} required />
       <div>
         <Label>Keywords</Label>
-        <TagInput className="text-black" value={keywords} onChange={setKeywords} placeholder="Add a keyword" />
+        <TagInput value={keywords} onChange={setKeywords} placeholder="Add a keyword" />
       </div>
       <div>
         <Label>Co-authors</Label>
