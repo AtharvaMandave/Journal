@@ -10,8 +10,8 @@ export default function ArchivesPage() {
   );
 
   return (
-    <main className="p-8 sm:p-20">
-      <h1 className="text-2xl font-semibold">Archives</h1>
+    <main className="p-8 sm:p-20 bg-white text-black">
+      <h1 className="text-2xl font-semibold text-black">Archives</h1>
       <div className="mt-4 flex gap-2">
         <input
           className="w-full rounded-2xl border px-3 py-2"
@@ -27,14 +27,14 @@ export default function ArchivesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{p.title}</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-black">
                     Published on: {new Date(p.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 {p.fileUrl ? (
                   <a
                     href={p.fileUrl}
-                    className="text-sm underline"
+                    className="text-sm underline text-blue-700"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -45,7 +45,7 @@ export default function ArchivesPage() {
             </div>
           ))
         ) : (
-          <p className="text-sm text-gray-600">No papers found.</p>
+          <p className="text-sm text-black">No papers found.</p>
         )}
       </div>
     </main>

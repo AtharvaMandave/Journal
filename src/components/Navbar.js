@@ -11,7 +11,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-green-600 text-white shadow-lg">
-      <nav className="mx-5 flex max-w-7xl items-center justify-between px-2  py-4  sm:px-6">
+      <nav className="mx-5 flex max-w-7xl items-center justify-between px-2 py-4 sm:px-6">
         {/* Logo/Brand */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2">
@@ -147,58 +147,60 @@ function NavLinks({ onClick, mobile }) {
     <div className={`flex ${mobile ? 'flex-col space-y-2' : 'items-center gap-1'}`}>
       {/* Home */}
       <NavItem>
-        <NavLink className ="mx-5" href="/" icon={Home}>
+        <NavLink className="mx-5" href="/" icon={Home}>
           Home
         </NavLink>
       </NavItem>
 
       {/* About Dropdown */}
       <NavItem className="relative">
-        <DropdownButton
-          isOpen={aboutOpen}
-          onClick={() => setAboutOpen(!aboutOpen)}
-          icon={Globe}
+        <div
+          onMouseEnter={() => !mobile && setAboutOpen(true)}
+          onMouseLeave={() => !mobile && setAboutOpen(false)}
         >
-          About
-        </DropdownButton>
-        <DropdownMenu isOpen={aboutOpen}>
-          <DropdownLink href="/about">About Journal</DropdownLink>
-          <DropdownLink href="/editorial-vision">Editorial Vision</DropdownLink>
-           <DropdownLink href="/editorial-board">Editorial Board</DropdownLink>
-          <DropdownLink href="/ethics">Publication Ethics</DropdownLink>
-          <DropdownLink href="/peer-review">Peer Review Process</DropdownLink>
-          <DropdownLink href="/joinAsReviewer">Join as Reviewer</DropdownLink>
-          <DropdownLink href="/privacyPolicies">Privacy Policies</DropdownLink>
-          <DropdownLink href="/termsConditions">Terms & Conditions</DropdownLink>
-        </DropdownMenu>
+          <DropdownButton
+            isOpen={aboutOpen}
+            onClick={() => mobile && setAboutOpen(!aboutOpen)}
+            icon={Globe}
+          >
+            About
+          </DropdownButton>
+          <DropdownMenu isOpen={aboutOpen}>
+            <DropdownLink href="/about">About Journal</DropdownLink>
+            <DropdownLink href="/editor-vision">Editorial Vision</DropdownLink>
+            <DropdownLink href="/editorial-board">Editorial Board</DropdownLink>
+            <DropdownLink href="/ethics">Publication Ethics</DropdownLink>
+            <DropdownLink href="/peer-review">Peer Review Process</DropdownLink>
+            <DropdownLink href="/joinAsReviewer">Join as Reviewer</DropdownLink>
+            <DropdownLink href="/privacy">Privacy Policies</DropdownLink>
+            <DropdownLink href="/termsConditions">Terms & Conditions</DropdownLink>
+          </DropdownMenu>
+        </div>
       </NavItem>
 
       {/* Author Dropdown */}
       <NavItem className="relative">
-        <DropdownButton
-          isOpen={authorOpen}
-          onClick={() => setAuthorOpen(!authorOpen)}
-          icon={User}
+        <div
+          onMouseEnter={() => !mobile && setAuthorOpen(true)}
+          onMouseLeave={() => !mobile && setAuthorOpen(false)}
         >
-          Author
-        </DropdownButton>
-        <DropdownMenu isOpen={authorOpen}>
-          <DropdownLink href="/submit">Submit Paper Online</DropdownLink>
-          {/* <DropdownLink href="/guidelines">Author Guidelines</DropdownLink> */}
-          <DropdownLink href="/check-status">Track Paper Status</DropdownLink>
-          <DropdownLink href="/paper-format">Paper Format</DropdownLink>
-          <DropdownLink href="/copyright-form">Copyright Form</DropdownLink>
-          <DropdownLink href="/certificates">Publication Certificate</DropdownLink>
-          <DropdownLink href="/publication-fee">Publication Fee</DropdownLink>
-        </DropdownMenu>
+          <DropdownButton
+            isOpen={authorOpen}
+            onClick={() => mobile && setAuthorOpen(!authorOpen)}
+            icon={User}
+          >
+            Author
+          </DropdownButton>
+          <DropdownMenu isOpen={authorOpen}>
+            <DropdownLink href="/submit">Submit Paper Online</DropdownLink>
+            <DropdownLink href="/check-status">Track Paper Status</DropdownLink>
+            <DropdownLink href="/paper-format">Paper Format</DropdownLink>
+            <DropdownLink href="/copyright-form">Copyright Form</DropdownLink>
+            <DropdownLink href="/certificates">Publication Certificate</DropdownLink>
+            <DropdownLink href="/publication-fee">Publication Fee</DropdownLink>
+          </DropdownMenu>
+        </div>
       </NavItem>
-
-      {/* Indexing */}
-      {/* <NavItem>
-        <NavLink href="/indexing" icon={FileText}>
-          Indexing
-        </NavLink>
-      </NavItem> */}
 
       {/* Fee */}
       <NavItem>
@@ -209,18 +211,23 @@ function NavLinks({ onClick, mobile }) {
 
       {/* Archives Dropdown */}
       <NavItem className="relative">
-        <DropdownButton
-          isOpen={archivesOpen}
-          onClick={() => setArchivesOpen(!archivesOpen)}
-          icon={Archive}
+        <div
+          onMouseEnter={() => !mobile && setArchivesOpen(true)}
+          onMouseLeave={() => !mobile && setArchivesOpen(false)}
         >
-          Archives
-        </DropdownButton>
-        <DropdownMenu isOpen={archivesOpen}>
-          <DropdownLink href="/current-issue">Current Issue</DropdownLink>
-          <DropdownLink href="/archives">Past Issues</DropdownLink>
-          <DropdownLink href="/searchPapers">Search for papers</DropdownLink>
-        </DropdownMenu>
+          <DropdownButton
+            isOpen={archivesOpen}
+            onClick={() => mobile && setArchivesOpen(!archivesOpen)}
+            icon={Archive}
+          >
+            Archives
+          </DropdownButton>
+          <DropdownMenu isOpen={archivesOpen}>
+            <DropdownLink href="/current-issue">Current Issue</DropdownLink>
+            <DropdownLink href="/archives">Past Issues</DropdownLink>
+            <DropdownLink href="/searchPapers">Search for papers</DropdownLink>
+          </DropdownMenu>
+        </div>
       </NavItem>
 
       {/* Conference */}
@@ -254,7 +261,7 @@ function AuthButtons({ session, mobile, onAction }) {
         <Link
           onClick={onAction}
           href="/dashboard"
-          className=" mx-3 inline-flex items-center rounded-lg bg-white hover:bg-gray-100 px-4 py-2 text-sm font-medium text-green-700 transition-colors shadow-sm"
+          className="mx-3 inline-flex items-center rounded-lg bg-white hover:bg-gray-100 px-4 py-2 text-sm font-medium text-green-700 transition-colors shadow-sm"
         >
           Dashboard
         </Link>

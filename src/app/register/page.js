@@ -31,7 +31,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="p-8 sm:p-20">
+    <main className="p-8 sm:p-20 bg-black">
       <h1 className="text-2xl font-semibold">Register</h1>
       <form onSubmit={handleSubmit} className="mt-6 max-w-md space-y-4">
         <input

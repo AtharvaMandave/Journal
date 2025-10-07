@@ -30,28 +30,84 @@ export default function RootLayout({ children }) {
           <div className="min-h-[calc(100vh-200px)] bg-gray-50/60">
             {children}
           </div>
-          <footer className="border-t bg-white text-gray-900">
-            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-              <div className="grid gap-6 sm:grid-cols-3">
-                <div>
-                  <p className="text-sm font-semibold">Journal</p>
-                  <p className="mt-2 text-sm text-gray-600">A modern open-access academic journal.</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Contact</p>
-                  <p className="mt-2 text-sm text-gray-600">contact@example.com</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Follow</p>
-                  <div className="mt-2 flex items-center gap-3 text-sm text-gray-600">
-                    <a href="#" aria-label="Twitter">Twitter</a>
-                    <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                  </div>
-                </div>
-              </div>
-              <p className="mt-8 text-xs text-gray-500">© {new Date().getFullYear()} Journal. All rights reserved.</p>
-            </div>
-          </footer>
+         <footer className="border-t bg-gray-50 text-gray-900">
+  <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="grid gap-8 md:grid-cols-4">
+      {/* About Section */}
+      <div className="md:col-span-1">
+        <h3 className="text-lg font-bold text-gray-900">Journal</h3>
+        <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+          A modern open-access academic journal committed to advancing research and knowledge sharing.
+        </p>
+      </div>
+
+      {/* Quick Links */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Quick Links</h4>
+        <ul className="mt-4 space-y-3">
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">About Us</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Editorial Board</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Submit Article</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Archives</a></li>
+        </ul>
+      </div>
+
+      {/* Resources */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Resources</h4>
+        <ul className="mt-4 space-y-3">
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Author Guidelines</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Peer Review Process</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Open Access Policy</a></li>
+          <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">FAQ</a></li>
+        </ul>
+      </div>
+
+      {/* Contact & Social */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Connect</h4>
+        <ul className="mt-4 space-y-3">
+          <li className="text-sm text-gray-600">
+            <a href="mailto:contact@example.com" className="hover:text-gray-900 transition-colors">
+              contact@example.com
+            </a>
+          </li>
+          <li className="text-sm text-gray-600">ISSN: 0000-0000</li>
+        </ul>
+        <div className="mt-4 flex items-center gap-4">
+          <a href="#" aria-label="Twitter" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+            </svg>
+          </a>
+          <a href="#" aria-label="LinkedIn" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+            </svg>
+          </a>
+          <a href="#" aria-label="ResearchGate" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    {/* Bottom Bar */}
+    <div className="mt-10 border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p className="text-xs text-gray-500 text-center md:text-left">
+        © {new Date().getFullYear()} Journal. All rights reserved.
+      </p>
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs">
+        <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">Privacy Policy</a>
+        <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">Terms of Use</a>
+        <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">Accessibility</a>
+        <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
         </Providers>
       </body>
     </html>

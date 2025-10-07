@@ -22,7 +22,15 @@ export async function POST(request) {
   await connect();
   const updated = await PaperModel.findByIdAndUpdate(
     paperId,
-    { $addToSet: { assignedReviewers: { $each: reviewerIds } }, status: "under-review" },
+    {
+      $addToSet: {
+        assignedReviewers: { $each: reviewerIds },
+      },
+      $push: {
+        reviewerInvites: { $each: reviewerIds.map((id) => ({ reviewerId: id, status: "invited", invitedAt: new Date() })) },
+      },
+      status: "under-review",
+    },
     { new: true }
   );
   if (!updated) return NextResponse.json({ error: "Paper not found" }, { status: 404 });

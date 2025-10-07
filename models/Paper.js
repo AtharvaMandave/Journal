@@ -31,6 +31,26 @@ const PaperSchema = new Schema(
     assignedReviewers: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     reviews: { type: [Schema.Types.ObjectId], ref: "Review", default: [] },
     issueId: { type: Schema.Types.ObjectId, ref: "Issue", default: null },
+    // Workflow metadata
+    submissionId: { type: String, index: true },
+    editorId: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    screened: { type: Boolean, default: false },
+    screeningNotes: { type: String, default: "" },
+    doi: { type: String, default: "", index: true },
+    reviewerInvites: {
+      type: [
+        new Schema(
+          {
+            reviewerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+            status: { type: String, enum: ["invited", "accepted", "declined"], default: "invited" },
+            invitedAt: { type: Date, default: Date.now },
+            respondedAt: { type: Date },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -42,6 +62,8 @@ PaperSchema.index({ correspondingAuthor: 1, createdAt: -1 });
 PaperSchema.index({ assignedReviewers: 1, createdAt: -1 });
 PaperSchema.index({ issueId: 1, createdAt: -1 });
 PaperSchema.index({ createdAt: -1 });
+PaperSchema.index({ submissionId: 1 });
+PaperSchema.index({ editorId: 1 });
 
 // Text index for archive/search pages
 // Note: text index on array field (keywords) is supported in MongoDB

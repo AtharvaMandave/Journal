@@ -14,7 +14,7 @@ export async function POST(request) {
   if (!session || session.user.role !== "reviewer") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  const { paperId, rating, comments, recommendation } = await request.json();
+  const { paperId, rating, comments, editorNotes, recommendation } = await request.json();
   if (!paperId || !rating || !recommendation) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
@@ -24,11 +24,19 @@ export async function POST(request) {
   if (!paper.assignedReviewers?.some((r) => String(r) === session.user.id)) {
     return NextResponse.json({ error: "Not assigned" }, { status: 403 });
   }
+  // If invites are used, enforce accepted state when present
+  if (Array.isArray(paper.reviewerInvites) && paper.reviewerInvites.length) {
+    const invite = paper.reviewerInvites.find((i) => String(i.reviewerId) === session.user.id);
+    if (!invite || invite.status !== "accepted") {
+      return NextResponse.json({ error: "Invitation not accepted" }, { status: 403 });
+    }
+  }
   const review = await ReviewModel.create({
     paperId,
     reviewerId: session.user.id,
     rating,
     comments: comments || "",
+    editorNotes: editorNotes || "",
     recommendation,
   });
   await PaperModel.findByIdAndUpdate(paperId, { $addToSet: { reviews: review._id } });

@@ -13,7 +13,13 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   await connect();
-  const papers = await PaperModel.find({ assignedReviewers: session.user.id })
+  // Show papers where reviewer is assigned or invited (and accepted)
+  const papers = await PaperModel.find({
+    $or: [
+      { assignedReviewers: session.user.id },
+      { reviewerInvites: { $elemMatch: { reviewerId: session.user.id, status: { $in: ["invited", "accepted"] } } } },
+    ],
+  })
     .select("title status fileUrl createdAt")
     .sort({ createdAt: -1 })
     .lean();

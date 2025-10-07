@@ -87,6 +87,8 @@ export async function POST(request) {
         return NextResponse.json({ uploadUrl, fileUrl: computedFileUrl });
       }
   
+      const submissionId = `TS-${Date.now().toString(36)}-${uuidv4().slice(0,8).toUpperCase()}`;
+
       const doc = await PaperModel.create({
         title,
         abstract,
@@ -95,17 +97,18 @@ export async function POST(request) {
         keywords,
         status: "submitted",
         fileUrl: computedFileUrl || undefined,
+        submissionId,
       });
   
       if (corresponding.email) {
         sendMail({
           to: corresponding.email,
           subject: "Submission received",
-          html: `<p>Dear ${corresponding.name || "Author"},</p><p>Your paper "${title}" has been received.</p>`,
+          html: `<p>Dear ${corresponding.name || "Author"},</p><p>Your paper "${title}" has been received.</p><p>Submission ID: <strong>${submissionId}</strong></p>`,
         }).catch(() => {});
       }
   
-      return NextResponse.json({ id: String(doc._id) }, { status: 201 });
+      return NextResponse.json({ id: String(doc._id), submissionId }, { status: 201 });
     } catch (e) {
       console.error("API error:", e);
       return NextResponse.json({ error: "Server error" }, { status: 500 });
