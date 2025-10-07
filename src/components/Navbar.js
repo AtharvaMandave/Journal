@@ -293,8 +293,8 @@ function AuthButtons({ session, mobile, onAction }) {
           </Link>
         ) : null}
         <button
-          onClick={() => {
-            signOut();
+          onClick={async () => {
+            await signOut({ callbackUrl: "/" });
             onAction && onAction();
           }}
           className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors shadow-sm min-w-[100px]"

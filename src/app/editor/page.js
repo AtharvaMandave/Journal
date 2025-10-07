@@ -14,44 +14,28 @@ export default function EditorDashboard() {
   if (error) return <div className="p-8 text-red-600">Failed to load papers.</div>;
 
   return (
-    <main className="p-8 sm:p-20 bg-white min-h-screen text-black">
-      <h1 className="text-3xl font-bold mb-6">Editor Dashboard</h1>
+    <main className="p-8 sm:p-20 bg-black min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Editor Dashboard</h1>
 
       {/* List of papers */}
       <div className="grid gap-4">
         {Array.isArray(papers) && papers.length > 0 ? (
           papers.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white shadow rounded-lg p-5 flex justify-between items-center border border-gray-300"
-            >
+            <div key={p.id} className="bg-white shadow rounded-lg p-5 flex justify-between items-center border border-gray-200">
               <div>
-                <h2 className="text-lg font-semibold text-black">{p.title}</h2>
-                <p className="text-sm text-gray-700">Status: {p.status}</p>
-                <p className="text-xs text-gray-600 mt-1">
-                  Screened: {p.screened ? "Yes" : "No"}
-                </p>
+                <h2 className="text-lg font-semibold text-gray-900">{p.title}</h2>
+                <p className="text-sm text-gray-500">Status: {p.status}</p>
+                <p className="text-xs text-gray-400 mt-1">Screened: {p.screened ? "Yes" : "No"}</p>
                 <div className="mt-1 flex gap-3 items-center text-xs">
-                  {p.fileUrl ? (
-                    <a
-                      href={p.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-green-700 underline"
-                    >
-                      PDF
-                    </a>
-                  ) : null}
-                  {p.doi ? <span className="text-gray-800">DOI: {p.doi}</span> : null}
+                  {p.fileUrl ? <a href={p.fileUrl} target="_blank" rel="noreferrer" className="text-green-700 underline">PDF</a> : null}
+                  {p.doi ? <span className="text-gray-600">DOI: {p.doi}</span> : null}
                 </div>
                 {Array.isArray(p.reviewerInvites) && p.reviewerInvites.length > 0 ? (
                   <div className="mt-2">
-                    <p className="text-xs text-gray-700">Invites:</p>
-                    <ul className="text-xs text-gray-800 list-disc ml-5">
+                    <p className="text-xs text-gray-500">Invites:</p>
+                    <ul className="text-xs text-gray-600 list-disc ml-5">
                       {p.reviewerInvites.map((ri, i) => (
-                        <li key={i}>
-                          {ri.reviewerId.slice(-4)} — {ri.status}
-                        </li>
+                        <li key={i}>{ri.reviewerId.slice(-4)} — {ri.status}</li>
                       ))}
                     </ul>
                   </div>
@@ -72,63 +56,14 @@ export default function EditorDashboard() {
 
       {/* Action buttons */}
       <div className="mt-6 grid gap-3">
-        {Array.isArray(papers)
-          ? papers.map((p) => (
-              <div key={p.id} className="flex gap-2">
-                <button
-                  onClick={() => setScreenModal(p)}
-                  className="px-3 py-1.5 text-sm border rounded text-black hover:bg-gray-100"
-                >
-                  Screen
-                </button>
-                <button
-                  onClick={async () => {
-                    setDeciding(p.id);
-                    await fetch("/api/admin/decide", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ paperId: p.id, decision: "accepted" }),
-                    });
-                    setDeciding(null);
-                    mutate();
-                  }}
-                  className="px-3 py-1.5 text-sm border rounded text-black hover:bg-gray-100"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={async () => {
-                    setDeciding(p.id);
-                    await fetch("/api/admin/decide", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ paperId: p.id, decision: "revise" }),
-                    });
-                    setDeciding(null);
-                    mutate();
-                  }}
-                  className="px-3 py-1.5 text-sm border rounded text-black hover:bg-gray-100"
-                >
-                  Revise
-                </button>
-                <button
-                  onClick={async () => {
-                    setDeciding(p.id);
-                    await fetch("/api/admin/decide", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ paperId: p.id, decision: "rejected" }),
-                    });
-                    setDeciding(null);
-                    mutate();
-                  }}
-                  className="px-3 py-1.5 text-sm border rounded text-black hover:bg-gray-100"
-                >
-                  Reject
-                </button>
-              </div>
-            ))
-          : null}
+        {Array.isArray(papers) ? papers.map((p) => (
+          <div key={p.id} className="flex gap-2">
+            <button onClick={() => setScreenModal(p)} className="px-3 py-1.5 text-sm border rounded">Screen</button>
+            <button onClick={async () => { setDeciding(p.id); await fetch("/api/admin/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paperId: p.id, decision: "accepted" }) }); setDeciding(null); mutate(); }} className="px-3 py-1.5 text-sm border rounded">Accept</button>
+            <button onClick={async () => { setDeciding(p.id); await fetch("/api/admin/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paperId: p.id, decision: "revise" }) }); setDeciding(null); mutate(); }} className="px-3 py-1.5 text-sm border rounded">Revise</button>
+            <button onClick={async () => { setDeciding(p.id); await fetch("/api/admin/decide", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ paperId: p.id, decision: "rejected" }) }); setDeciding(null); mutate(); }} className="px-3 py-1.5 text-sm border rounded">Reject</button>
+          </div>
+        )) : null}
       </div>
 
       {modalPaper && (
@@ -214,7 +149,7 @@ function AssignModal({ paper, onClose, onAssigned }) {
         </div>
 
         {/* Results */}
-        <div className="mt-4 max-h-60 overflow-y-auto space-y-2">
+        <div className="mt-4 max-h-60 overflow-y-auto space-y-2 bg-black">
           {results.length > 0 ? (
             results.map((r) => (
               <label
@@ -244,7 +179,7 @@ function AssignModal({ paper, onClose, onAssigned }) {
         </div>
 
         {/* Action buttons */}
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex justify-end gap-3 bg-black">
           <button
             onClick={onClose}
             className="px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-100 transition"
@@ -282,7 +217,7 @@ function ScreenModal({ paper, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md text-black">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md">
         <h3 className="text-lg font-semibold mb-3">Screen Paper</h3>
         <label className="flex items-center gap-2 text-sm">
           <input

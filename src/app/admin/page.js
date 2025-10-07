@@ -96,10 +96,11 @@ function PapersPanel() {
   const { data: search, mutate: mutSearch } = useSWR(null, (u) => fetch(u).then((r) => r.json()));
   const { data: users } = useSWR("/api/admin/users", (u) => fetch(u).then((r) => r.json()));
   const [q, setQ] = useState("");
-  const [modal, setModal] = useState(null); // { type: 'screen'|'editor'|'reviewers', paper }
+  const [modal, setModal] = useState(null); // { type: 'screen'|'editor'|'reviewers'|'doi', paper }
   const [screened, setScreened] = useState(false);
   const [screeningNotes, setScreeningNotes] = useState("");
   const [editorId, setEditorId] = useState("");
+  const [doi, setDoi] = useState("");
   const [revQuery, setRevQuery] = useState("");
   const { data: reviewerResults, mutate: mutReviewers } = useSWR(null, (u) => fetch(u).then((r) => r.json()));
   const [selectedReviewerIds, setSelectedReviewerIds] = useState([]);
@@ -139,6 +140,10 @@ function PapersPanel() {
     setRevQuery("");
     mutReviewers(null);
   }
+  function openDoiModal(paper) {
+    setModal({ type: "doi", paper });
+    setDoi(paper.doi || "");
+  }
   async function searchReviewers(e) {
     e.preventDefault();
     const url = "/api/admin/search-reviewers" + (revQuery ? "?q=" + encodeURIComponent(revQuery) : "");
@@ -172,6 +177,7 @@ function PapersPanel() {
                 <button onClick={() => openScreenModal(p)} className="rounded border px-2 py-1">Screen</button>
                 <button onClick={() => openEditorModal(p)} className="rounded border px-2 py-1">Assign Editor</button>
                 <button onClick={() => openReviewersModal(p)} className="rounded border px-2 py-1">Assign Reviewers</button>
+                <button onClick={() => openDoiModal(p)} className="rounded border px-2 py-1">Set DOI</button>
               </div>
             </div>
           </div>
@@ -235,7 +241,7 @@ function PapersPanel() {
               </div>
             ) : null}
 
-            {modal.type === "reviewers" ? (
+                {modal.type === "reviewers" ? (
               <div className="mt-4 space-y-4">
                 <form onSubmit={searchReviewers} className="flex gap-2">
                   <input className="w-full rounded border px-3 py-2 text-sm" placeholder="Search reviewers by name or email" value={revQuery} onChange={(e) => setRevQuery(e.target.value)} />
@@ -270,6 +276,17 @@ function PapersPanel() {
                 </div>
               </div>
             ) : null}
+
+                {modal.type === "doi" ? (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-sm">Set DOI for this paper.</p>
+                    <input className="w-full rounded border p-2 text-sm" placeholder="10.xxxx/xxxxx" value={doi} onChange={(e) => setDoi(e.target.value)} />
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => setModal(null)} className="rounded border px-4 py-2">Cancel</button>
+                      <button onClick={async () => { await fetch('/api/admin/papers', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paperId: modal.paper.id, doi }) }); setModal(null); mutate(); }} className="rounded bg-black px-4 py-2 text-white">Save</button>
+                    </div>
+                  </div>
+                ) : null}
           </div>
         </div>
       ) : null}
