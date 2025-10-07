@@ -20,10 +20,20 @@ export async function GET() {
       { reviewerInvites: { $elemMatch: { reviewerId: session.user.id, status: { $in: ["invited", "accepted"] } } } },
     ],
   })
-    .select("title status fileUrl createdAt")
+    .select("title status fileUrl createdAt reviewerInvites")
     .sort({ createdAt: -1 })
     .lean();
-  return NextResponse.json(papers.map((p) => ({ id: String(p._id), title: p.title, status: p.status, fileUrl: p.fileUrl || "" })));
+  return NextResponse.json(
+    papers.map((p) => ({
+      id: String(p._id),
+      title: p.title,
+      status: p.status,
+      fileUrl: p.fileUrl || "",
+      inviteStatus: Array.isArray(p.reviewerInvites)
+        ? (p.reviewerInvites.find((ri) => String(ri.reviewerId) === session.user.id)?.status || "")
+        : "",
+    }))
+  );
 }
 
 

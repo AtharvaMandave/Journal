@@ -14,10 +14,22 @@ export default function ReviewerDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{p.title}</p>
-                <p className="text-sm text-gray-600">Status: {p.status}</p>
+                <p className="text-sm text-gray-600">Status: {p.status}{p.inviteStatus ? ` • Invite: ${p.inviteStatus}` : ""}</p>
               </div>
               <div className="flex items-center gap-3">
                 {p.fileUrl ? <a href={p.fileUrl} className="text-sm underline" target="_blank" rel="noreferrer">PDF</a> : null}
+                {p.inviteStatus === "invited" ? (
+                  <>
+                    <button
+                      onClick={async () => { await fetch('/api/reviewer/respond', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paperId: p.id, response: 'accept' }) }); location.reload(); }}
+                      className="rounded border px-3 py-1.5"
+                    >Accept</button>
+                    <button
+                      onClick={async () => { await fetch('/api/reviewer/respond', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paperId: p.id, response: 'decline' }) }); location.reload(); }}
+                      className="rounded border px-3 py-1.5"
+                    >Decline</button>
+                  </>
+                ) : null}
                 <Link href={`/review/${p.id}`} className="rounded border px-3 py-1.5">Review</Link>
               </div>
             </div>

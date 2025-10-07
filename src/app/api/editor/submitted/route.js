@@ -13,7 +13,12 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   await connect();
-  const papers = await PaperModel.find({ status: { $in: ["submitted", "under-review"] } })
+  // Scope: editors see only papers assigned to them; admins see all
+  const baseQuery = { status: { $in: ["submitted", "under-review"] } };
+  const query = session.user.role === "editor"
+    ? { ...baseQuery, editorId: session.user.id }
+    : baseQuery;
+  const papers = await PaperModel.find(query)
     .select("title status fileUrl createdAt assignedReviewers reviewerInvites screened screeningNotes editorId doi")
     .sort({ createdAt: -1 })
     .lean();

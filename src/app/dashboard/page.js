@@ -66,6 +66,11 @@ export default function DashboardPage() {
                     </a>
                   ) : null}
                 </div>
+                {p.status === "revise" ? (
+                  <div className="mt-3">
+                    <Link href={`/submit?revise=${p.id}`} className="rounded border px-3 py-1.5">Revise / Resubmit</Link>
+                  </div>
+                ) : null}
               </div>
             ))
           ) : (

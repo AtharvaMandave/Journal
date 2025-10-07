@@ -62,7 +62,8 @@ function StatusBadge({ status }) {
     "under-review": "blue",
     revise: "red",
     accepted: "green",
-    published: "emerald",
+    rejected: "red",
+    published: "green",
   };
   return <Badge color={map[status] || "gray"}>{status}</Badge>;
 }
