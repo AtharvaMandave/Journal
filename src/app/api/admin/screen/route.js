@@ -9,7 +9,7 @@ const { PaperModel } = paperModule;
 
 export async function PATCH(request) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!session || (session.user.role !== "admin" && session.user.role !== "editor")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { paperId, screened, notes } = await request.json();
