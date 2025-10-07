@@ -190,14 +190,14 @@ function Form() {
         <Label>Co-authors</Label>
         <CoAuthors value={coAuthors} onChange={setCoAuthors} />
       </div>
-      <div>
+      <div className="text-black">
         <input aria-label="Upload PDF" type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
       </div>
       <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-        I agree to the submission terms
+        <input className="text-black" type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+        <p className="text-black">I agree to the submission terms</p>
       </label>
-      {message ? <p className="text-sm text-gray-700">{message}</p> : null}
+      {message ? <p className="text-sm text-black">{message}</p> : null}
       <Button disabled={loading} type="submit" className="w-full">
         {loading ? "Submitting..." : "Submit Paper"}
       </Button>

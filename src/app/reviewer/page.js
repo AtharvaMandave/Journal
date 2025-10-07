@@ -6,8 +6,6 @@ import Link from "next/link";
 export default function ReviewerDashboard() {
   const { data } = useSWR("/api/reviewer/assigned", (u) => fetch(u).then((r) => r.json()));
   return (
-    <main className="min-h-screen bg-gray-50 p-8 sm:p-20">
-      <h1 className="text-2xl font-semibold text-gray-900">Reviewer Dashboard</h1>
     <main className="p-8 sm:p-20 text-black">
       <h1 className="text-2xl font-semibold text-black">Reviewer Dashboard</h1>
       <div className="mt-6 grid gap-3">
@@ -40,5 +38,3 @@ export default function ReviewerDashboard() {
     </main>
   );
 }
-
-
