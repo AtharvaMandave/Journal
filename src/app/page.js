@@ -1,127 +1,230 @@
 'use client'
-import Link from "next/link";
-import { Button } from "@/components/ui";
-import { motion } from "framer-motion";
-import useSWR from "swr";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FileText, Award, Zap, Globe, CheckCircle, Download } from 'lucide-react';
+
+// Mock data for demo
+const mockCfp = [{ title: "Special Issue on AI and Machine Learning", deadline: "2025-09-30" }];
+const mockRecent = [
+  { id: 1, title: "Advanced Machine Learning Techniques for Climate Prediction", fileUrl: "#" },
+  { id: 2, title: "Blockchain Technology in Supply Chain Management", fileUrl: "#" },
+  { id: 3, title: "Quantum Computing: Current State and Future Prospects", fileUrl: "#" }
+];
 
 export default function Home() {
-  const { data: cfp } = useSWR("/api/public/announcements", (u) => fetch(u).then((r) => r.json()));
-  const { data: recent } = useSWR("/api/public/recent-papers", (u) => fetch(u).then((r) => r.json()));
+  const cfp = mockCfp;
+  const recent = mockRecent;
 
   return (
     <main className="bg-gray-50">
       {/* Header with Journal Title */}
-      <section className="bg-white border-b-2 border-green-500">
+      <motion.section 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-white border-b-2 border-green-500 shadow-sm"
+      >
         <div className="mx-auto max-w-7xl px-4 py-8 text-center">
           <div className="flex items-center justify-center gap-4 mb-4">
-            {/* <div className="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center">
-              <div className="text-white font-bold text-xl">J</div>
-            </div> */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center shadow-lg"
+            >
+              <div className="text-white font-bold text-2xl">T</div>
+            </motion.div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-green-600 uppercase tracking-wide">
                 TechnoScholars 
-              
               </h1>
               <p className="text-gray-600 text-sm mt-1">(Peer-Reviewed, Open Access, Fully Refereed International Journal)</p>
               <p className="text-red-600 font-semibold text-sm">ISSN: 2582-5208</p>
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Call for Papers Banner */}
       {Array.isArray(cfp) && cfp.length > 0 && (
-        <div className="bg-yellow-100 border-b border-yellow-300">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="bg-gradient-to-r from-yellow-100 to-yellow-50 border-b border-yellow-300"
+        >
           <div className="mx-auto max-w-7xl px-4 py-3 text-center">
-            <p className="text-yellow-900 font-semibold">
-              <strong>📢 Call for Papers:</strong> {cfp[0].title} 
+            <p className="text-yellow-900 font-semibold flex items-center justify-center gap-2 flex-wrap">
+              <strong className="flex items-center gap-1">
+                <Zap className="w-4 h-4" /> Call for Papers:
+              </strong> {cfp[0].title} 
               {cfp[0].deadline && ` — Deadline: ${new Date(cfp[0].deadline).toLocaleDateString()}`}
-              <Link href="/call-for-paper" className="ml-2 underline hover:no-underline">Submit Now</Link>
+              <a href="/call-for-paper" className="ml-2 underline hover:no-underline text-green-600 font-bold">Submit Now</a>
             </p>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Welcome Section */}
       <section className="bg-white py-8">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="text-center text-2xl font-bold text-green-600 mb-8">Welcome to TechnoScholars </h2>
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center text-2xl font-bold text-green-600 mb-8"
+          >
+            Welcome to TechnoScholars
+          </motion.h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Impact Factor Card */}
-            <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-xl p-6 text-white text-center">
-              <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ y: -5 }}
+              className="bg-gradient-to-br from-green-500 to-green-700 rounded-xl p-6 text-white text-center shadow-xl"
+            >
+              <motion.div 
+                whileHover={{ rotate: 360, scale: 1.1 }}
+                transition={{ duration: 0.6 }}
+                className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+              >
                 <span className="text-2xl font-bold text-green-800">8.187</span>
-              </div>
-              <h3 className="font-semibold mb-4">High Impact Factor</h3>
+              </motion.div>
+              <h3 className="font-semibold mb-4 text-lg">High Impact Factor</h3>
               
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="bg-green-600 rounded-lg p-2">
-                  <div className="font-semibold">Free</div>
-                  <div>open access journal</div>
-                </div>
-                <div className="bg-green-600 rounded-lg p-2">
-                  <div className="font-semibold">Most-Cited</div>
-                  <div>Publisher</div>
-                </div>
-                <div className="bg-green-600 rounded-lg p-2">
-                  <div className="font-semibold">Low cost</div>
-                  <div>Journal</div>
-                </div>
-                <div className="bg-green-600 rounded-lg p-2">
-                  <div className="font-semibold">Fast</div>
-                  <div>paper publication</div>
-                </div>
+                {[
+                  { icon: Globe, label: 'Free', sublabel: 'open access journal' },
+                  { icon: Award, label: 'Most-Cited', sublabel: 'Publisher' },
+                  { icon: CheckCircle, label: 'Low cost', sublabel: 'Journal' },
+                  { icon: Zap, label: 'Fast', sublabel: 'paper publication' }
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i}
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-green-600 rounded-lg p-2 cursor-pointer transition-all hover:bg-green-500"
+                  >
+                    <item.icon className="w-5 h-5 mx-auto mb-1" />
+                    <div className="font-semibold">{item.label}</div>
+                    <div className="text-xs">{item.sublabel}</div>
+                  </motion.div>
+                ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Submit Paper */}
-                <div className="bg-green-600 rounded-xl p-6 text-white">
+                <motion.div 
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                  className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 text-white shadow-lg cursor-pointer"
+                >
+                  <FileText className="w-10 h-10 mb-3 opacity-90" />
                   <h3 className="text-2xl font-bold mb-2">Submit Your Paper Online</h3>
                   <p className="mb-4 opacity-90">low cost journal, fast publication</p>
-                  <Link href="/submit">
-                    <Button className="bg-gray-900 hover:bg-gray-900 text-black ">
+                  <a href="/submit">
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                    >
                       Submit Now
-                    </Button>
-                  </Link>
-                </div>
+                    </motion.button>
+                  </a>
+                </motion.div>
 
                 {/* Call for Paper */}
-                <div className="bg-green-600 rounded-xl p-6 text-white">
+                <motion.div 
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                  className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-6 text-white shadow-lg"
+                >
                   <h3 className="text-2xl font-bold mb-2">Call For Paper</h3>
                   <div className="space-y-1 text-sm">
-                    <p>Submission Last Date: <strong>30 Sep 2025</strong></p>
-                    <p>Review Status: <strong>24 to 48 Hours</strong></p>
-                    <p>Fast Paper Publication: <strong>4 hours</strong></p>
-                    <p className="font-semibold">DOI Service Started</p>
+                    <p className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Submission Last Date: <strong>30 Sep 2025</strong>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Review Status: <strong>24 to 48 Hours</strong>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Fast Paper Publication: <strong>4 hours</strong>
+                    </p>
+                    <p className="font-semibold flex items-center gap-2 mt-2 bg-yellow-400 text-green-800 px-3 py-1 rounded-full inline-block">
+                      <Zap className="w-4 h-4" />
+                      DOI Service Started
+                    </p>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
 
             {/* Latest News */}
-            <div className="bg-white border rounded-xl p-6">
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ y: -5 }}
+              className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all"
+            >
               <h3 className="text-xl font-bold text-gray-800 mb-4">Latest News</h3>
               <div className="space-y-3 text-sm text-gray-600">
-                <p>helps in splitting the knowledge.</p>
-                <p>DOI services started for both already published paper and for new submission</p>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-start gap-2"
+                >
+                  <span className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                  helps in splitting the knowledge.
+                </motion.p>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-start gap-2"
+                >
+                  <span className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></span>
+                  DOI services started for both already published paper and for new submission
+                </motion.p>
               </div>
               
               <div className="mt-6">
                 <h4 className="font-bold text-gray-800 mb-3">INDEXING</h4>
                 <div className="flex items-center space-x-2">
-                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <motion.div 
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow-md cursor-pointer"
+                  >
                     <span className="font-bold text-sm">DOI</span>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                  </motion.div>
+                  <motion.div 
+                    whileHover={{ scale: 1.1, rotate: -5 }}
+                    className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-md cursor-pointer"
+                  >
                     <span className="text-white font-bold text-xs">SS</span>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -131,32 +234,68 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4">
           <div className="grid lg:grid-cols-4 gap-6">
             {/* Sidebar */}
-            <div className="space-y-4">
-              <div className="bg-green-600 text-white p-4 rounded-lg">
-                <h3 className="font-bold mb-3">FOR AUTHORS</h3>
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-4"
+            >
+              <div className="bg-gradient-to-br from-green-600 to-green-700 text-white p-4 rounded-lg shadow-lg">
+                <h3 className="font-bold mb-3 text-lg">FOR AUTHORS</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="call-for-paper" className="hover:underline">📄 Call for Paper</Link></li>
-                  <li><Link href="/publication-process" className="hover:underline">📋 Publication Process</Link></li>
-                  <li><Link href="/submit" className="hover:underline">📝 Submit Paper Online</Link></li>
-                  <li><Link href="/publication-fees" className="hover:underline">💳 Pay Publication Fee</Link></li>
-                  <li><Link href="#" className="hover:underline">📑 Paper Format</Link></li>
-                  <li><Link href="#" className="hover:underline">📋 Copyright Form</Link></li>
-                  <li><Link href="#" className="hover:underline">🔍 Track Paper</Link></li>
-                  <li><Link href="#" className="hover:underline">📊 Indexing</Link></li>
-                  <li><Link href="#" className="hover:underline">👥 Editorial Board</Link></li>
+                  {[
+                    { href: 'call-for-paper', icon: '📄', label: 'Call for Paper' },
+                    { href: '/publication-process', icon: '📋', label: 'Publication Process' },
+                    { href: '/submit', icon: '📝', label: 'Submit Paper Online' },
+                    { href: '/publication-fees', icon: '💳', label: 'Pay Publication Fee' },
+                    { href: '/pdfs/paper-format.pdf', icon: '📑', label: 'Paper Format', download: true },
+                    { href: '/pdfs/copyright-form.pdf', icon: '📋', label: 'Copyright Form', download: true },
+                    { href: '#', icon: '🔍', label: 'Track Paper' },
+                    { href: '#', icon: '📊', label: 'Indexing' },
+                    { href: '#', icon: '👥', label: 'Editorial Board' }
+                  ].map((item, i) => (
+                    <motion.li 
+                      key={i}
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <a 
+                        href={item.href} 
+                        download={item.download}
+                        className="hover:underline flex items-center gap-2"
+                      >
+                        <span>{item.icon}</span>
+                        {item.label}
+                      </a>
+                    </motion.li>
+                  ))}
                 </ul>
               </div>
 
-              <div className="bg-green-600 text-white p-4 rounded-lg">
-                <h3 className="font-bold mb-3">PUBLICATION</h3>
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="bg-gradient-to-br from-green-600 to-green-700 text-white p-4 rounded-lg shadow-lg"
+              >
+                <h3 className="font-bold mb-3 text-lg">PUBLICATION</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="#" className="hover:underline">📖 Current Issue</Link></li>
+                  <motion.li whileHover={{ x: 5 }}>
+                    <a href="#" className="hover:underline flex items-center gap-2">
+                      <span>📖</span>
+                      Current Issue
+                    </a>
+                  </motion.li>
                 </ul>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Main Content */}
-            <div className="lg:col-span-3">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-3"
+            >
               <p className="text-gray-700 leading-relaxed mb-6">
                 IRJMETS is Fast Paper publication, low cost journal, peer-reviewed, Open Access, Fast processing journal that 
                 publishes original research articles as well as review articles in several areas of engineering, science and 
@@ -170,27 +309,55 @@ export default function Home() {
               
               <div className="grid md:grid-cols-2 gap-6">
                 <ul className="space-y-2 text-sm text-gray-700">
-                  <li>• Low cost Journal</li>
-                  <li>• Fast response after received paper within 6 hours.</li>
-                  <li>• Fast paper publication within 4 hours after receiving publication fees and copyright form.</li>
-                  <li>• Provide DOI</li>
-                  <li>• Low publication fees.</li>
-                  <li>• Paper id is provided to track paper process.</li>
-                  <li>• Simple and fast paper submission process.</li>
-                  <li>• Free open access journal. Monthly paper publication.</li>
+                  {[
+                    'Low cost Journal',
+                    'Fast response after received paper within 6 hours.',
+                    'Fast paper publication within 4 hours after receiving publication fees and copyright form.',
+                    'Provide DOI',
+                    'Low publication fees.',
+                    'Paper id is provided to track paper process.',
+                    'Simple and fast paper submission process.',
+                    'Free open access journal. Monthly paper publication.'
+                  ].map((service, i) => (
+                    <motion.li 
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      {service}
+                    </motion.li>
+                  ))}
                 </ul>
                 
                 <ul className="space-y-2 text-sm text-gray-700">
-                  <li>• Provide free soft copy of certificate of publication to each author.</li>
-                  <li>• Provide hard copy of paper publication certificate to each author</li>
-                  <li>• Secure payment gateway.</li>
-                  <li>• Strictly goes through plagiarism process.</li>
-                  <li>• Paper can be submitted by authors any day any time.</li>
-                  <li>• Accepted paper publication fees paid by authors online by Debit Card/ Credit Card/Net Banking/ Paytm /Phone Pe/ Bhim/Googlepay or any other UPI app</li>
-                  <li>• Publication Guidelines - COPE Guidelines 24*7 authors query or problem resolving system</li>
+                  {[
+                    'Provide free soft copy of certificate of publication to each author.',
+                    'Provide hard copy of paper publication certificate to each author',
+                    'Secure payment gateway.',
+                    'Strictly goes through plagiarism process.',
+                    'Paper can be submitted by authors any day any time.',
+                    'Accepted paper publication fees paid by authors online by Debit Card/ Credit Card/Net Banking/ Paytm /Phone Pe/ Bhim/Googlepay or any other UPI app',
+                    'Publication Guidelines - COPE Guidelines 24*7 authors query or problem resolving system'
+                  ].map((service, i) => (
+                    <motion.li 
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      {service}
+                    </motion.li>
+                  ))}
                 </ul>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -198,26 +365,44 @@ export default function Home() {
       {/* Recent Papers */}
       <section className="bg-gray-50 py-8">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Papers</h2>
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-2xl font-bold text-gray-900 mb-6"
+          >
+            Recent Papers
+          </motion.h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.isArray(recent) && recent.length > 0 ? recent.map((p) => (
-              <div key={p.id} className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow">
-                <Link href={`/papers/${p.id}`} className="font-medium text-green-600 hover:underline block mb-3">
+            {Array.isArray(recent) && recent.length > 0 ? recent.map((p, i) => (
+              <motion.div 
+                key={p.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -5, shadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
+                className="bg-white rounded-lg border-2 border-gray-200 p-4 hover:border-green-500 hover:shadow-lg transition-all"
+              >
+                <a href={`/papers/${p.id}`} className="font-medium text-green-600 hover:underline block mb-3">
                   {p.title}
-                </Link>
+                </a>
                 <div className="flex items-center gap-2">
                   {p.fileUrl && (
-                    <a 
-                      className="inline-flex items-center bg-green-100 text-green-700 rounded-full px-3 py-1.5 text-sm hover:bg-green-200 transition-colors" 
+                    <motion.a 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="inline-flex items-center gap-2 bg-green-100 text-green-700 rounded-full px-3 py-1.5 text-sm hover:bg-green-600 hover:text-white transition-colors" 
                       href={p.fileUrl} 
                       target="_blank" 
                       rel="noreferrer"
                     >
-                      📄 Download PDF
-                    </a>
+                      <Download className="w-4 h-4" />
+                      Download PDF
+                    </motion.a>
                   )}
                 </div>
-              </div>
+              </motion.div>
             )) : (
               <p className="text-gray-600 col-span-full text-center py-8">No recent publications yet.</p>
             )}
@@ -226,39 +411,44 @@ export default function Home() {
       </section>
 
       {/* Call to Action */}
-      <section className="bg-green-600 text-white py-12">
+      <motion.section 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="bg-gradient-to-br from-green-600 to-green-700 text-white py-12"
+      >
         <div className="mx-auto max-w-7xl px-4 text-center">
           <h3 className="text-2xl font-bold mb-3">Ready to contribute?</h3>
           <p className="mb-6 opacity-90">Join our community of researchers. Start a new submission in minutes.</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/register">
-              <Button size="lg" className="bg-green-600 text-white  hover:text-green-600 border-1 border-white hover:bg-white">
-                Create an Account
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-green-600">
-                Login
-              </Button>
-            </Link>
-            <Link href="/about">
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-green-600">
-                About
-              </Button>
-            </Link>
-            <Link href="/archives">
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-green-600">
-                Archives
-              </Button>
-            </Link>
-            <Link href="/editorial-board">
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-green-600">
-                Editorial Board
-              </Button>
-            </Link>
+            {[
+              { href: '/register', label: 'Create an Account', variant: 'solid' },
+              { href: '/login', label: 'Login', variant: 'outline' },
+              { href: '/about', label: 'About', variant: 'outline' },
+              { href: '/archives', label: 'Archives', variant: 'outline' },
+              { href: '/editorial-board', label: 'Editorial Board', variant: 'outline' }
+            ].map((btn, i) => (
+              <motion.a
+                key={i}
+                href={btn.href}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+                  btn.variant === 'solid' 
+                    ? 'bg-white text-green-600 hover:shadow-lg' 
+                    : 'border-2 border-white text-white hover:bg-white hover:text-green-600'
+                }`}
+              >
+                {btn.label}
+              </motion.a>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
     </main>
   );
 }

@@ -239,7 +239,7 @@ function NavLinks({ onClick, mobile }) {
 
       {/* FAQ */}
       <NavItem>
-        <NavLink href="/faq" icon={HelpCircle}>
+        <NavLink href="/faqs" icon={HelpCircle}>
           FAQ
         </NavLink>
       </NavItem>
