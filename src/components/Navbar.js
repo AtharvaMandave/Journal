@@ -255,6 +255,61 @@ function NavLinks({ onClick, mobile }) {
 }
 
 function AuthButtons({ session, mobile, onAction }) {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent multiple clicks
+    
+    setIsSigningOut(true);
+    
+    try {
+      // Close mobile menu first if onAction is provided
+      if (onAction) {
+        onAction();
+      }
+
+      // Call custom sign out API
+      const response = await fetch('/api/auth/signout-custom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Use next-auth's signOut with redirect
+        await signOut({ 
+          callbackUrl: "/",
+          redirect: true 
+        });
+      } else {
+        // If custom API fails, fallback to direct signOut
+        console.error("Custom sign out failed:", data.error);
+        await signOut({ 
+          callbackUrl: "/",
+          redirect: true 
+        });
+      }
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // Fallback: try direct signOut
+      try {
+        await signOut({ 
+          callbackUrl: "/",
+          redirect: true 
+        });
+      } catch (fallbackError) {
+        console.error("Fallback sign out failed:", fallbackError);
+        // Last resort: force redirect
+        window.location.href = "/";
+      }
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   if (session?.user) {
     return (
       <div className={`flex ${mobile ? 'flex-col gap-2' : 'items-center gap-3'}`}>
@@ -265,7 +320,7 @@ function AuthButtons({ session, mobile, onAction }) {
         >
           Dashboard
         </Link>
-        {session.user.role === "editor" || session.user.role === "admin" ? (
+        {session.user.role === "editor" ? (
           <Link
             onClick={onAction}
             href="/editor"
@@ -293,13 +348,11 @@ function AuthButtons({ session, mobile, onAction }) {
           </Link>
         ) : null}
         <button
-          onClick={async () => {
-            await signOut({ callbackUrl: "/" });
-            onAction && onAction();
-          }}
-          className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors shadow-sm min-w-[100px]"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          className="inline-flex items-center justify-center rounded-lg bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed px-4 py-2 text-sm font-medium text-white transition-colors shadow-sm min-w-[100px]"
         >
-          Sign Out
+          {isSigningOut ? "Signing Out..." : "Sign Out"}
         </button>
       </div>
     );
