@@ -24,7 +24,8 @@ export default function LoginPage() {
       const sess = await roleRes.json();
       const role = sess?.user?.role;
       if (role === "reviewer") router.push("/reviewer");
-      else if (role === "editor" || role === "admin") router.push("/editor");
+      else if (role === "editor") router.push("/editor");
+      else if(role === "admin")router.push("/admin");
       else router.push("/dashboard");
     } else {
       setError("Invalid credentials");
