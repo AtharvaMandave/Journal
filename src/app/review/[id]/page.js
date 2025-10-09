@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, use } from "react";
 
 export default function ReviewFormPage({ params }) {
-  const { id } = params;
+  const { id } = use(params);
   const router = useRouter();
   const [rating, setRating] = useState(3);
   const [recommendation, setRecommendation] = useState("minor-revision");
@@ -44,5 +44,3 @@ export default function ReviewFormPage({ params }) {
     </main>
   );
 }
-
-
