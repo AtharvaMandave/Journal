@@ -12,16 +12,36 @@ export async function GET() {
   if (!session || (session.user.role !== "editor" && session.user.role !== "admin")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+  
   await connect();
-  // Scope: editors see only papers assigned to them; admins see all
-  const baseQuery = { status: { $in: ["submitted", "under-review"] } };
+  
+  // Define which statuses each role can see
+  let statusFilter;
+  
+  if (session.user.role === "editor") {
+    // Editors see: submitted, under-review, and their own recommendations
+    statusFilter = { 
+      $in: ["submitted", "under-review", "pending-approval", "editor-rejected"] 
+    };
+  } else {
+    // Admins see: all papers including those pending approval
+    statusFilter = { 
+      $in: ["submitted", "under-review", "pending-approval", "editor-rejected"] 
+    };
+  }
+  
+  const baseQuery = { status: statusFilter };
+  
+  // Editors only see papers assigned to them
   const query = session.user.role === "editor"
     ? { ...baseQuery, editorId: session.user.id }
     : baseQuery;
+  
   const papers = await PaperModel.find(query)
-    .select("title status fileUrl createdAt assignedReviewers reviewerInvites screened screeningNotes editorId doi")
+    .select("title status fileUrl createdAt assignedReviewers reviewerInvites screened screeningNotes editorId doi editorDecision editorDecisionAt")
     .sort({ createdAt: -1 })
     .lean();
+    
   return NextResponse.json(
     papers.map((p) => ({
       id: String(p._id),
@@ -32,12 +52,19 @@ export async function GET() {
       screened: !!p.screened,
       screeningNotes: p.screeningNotes || "",
       editorId: p.editorId ? String(p.editorId) : "",
-      assignedReviewers: Array.isArray(p.assignedReviewers) ? p.assignedReviewers.map((r) => String(r)) : [],
+      editorDecision: p.editorDecision || "",
+      editorDecisionAt: p.editorDecisionAt || null,
+      assignedReviewers: Array.isArray(p.assignedReviewers) 
+        ? p.assignedReviewers.map((r) => String(r)) 
+        : [],
       reviewerInvites: Array.isArray(p.reviewerInvites)
-        ? p.reviewerInvites.map((ri) => ({ reviewerId: String(ri.reviewerId), status: ri.status, invitedAt: ri.invitedAt || null, respondedAt: ri.respondedAt || null }))
+        ? p.reviewerInvites.map((ri) => ({ 
+            reviewerId: String(ri.reviewerId), 
+            status: ri.status, 
+            invitedAt: ri.invitedAt || null, 
+            respondedAt: ri.respondedAt || null 
+          }))
         : [],
     }))
   );
 }
-
-

@@ -5,6 +5,8 @@ const PAPER_STATUSES = [
   "submitted",
   "under-review",
   "revise",
+  "pending-approval",
+  "editor-rejected",
   "accepted",
   "rejected",
   "published",
@@ -32,11 +34,12 @@ const PaperSchema = new Schema(
     reviews: { type: [Schema.Types.ObjectId], ref: "Review", default: [] },
     issueId: { type: Schema.Types.ObjectId, ref: "Issue", default: null },
     // Workflow metadata
-    submissionId: { type: String, index: true },
+    submissionId: { type: String },
     editorId: { type: Schema.Types.ObjectId, ref: "User", default: null },
     screened: { type: Boolean, default: false },
     screeningNotes: { type: String, default: "" },
     doi: { type: String, default: "", index: true },
+    publishedAt: { type: Date },
     reviewerInvites: {
       type: [
         new Schema(
@@ -74,5 +77,3 @@ try {
 const PaperModel = mongoose.models.Paper || mongoose.model("Paper", PaperSchema);
 
 module.exports = { PAPER_STATUSES, PaperModel };
-
-

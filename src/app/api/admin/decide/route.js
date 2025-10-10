@@ -14,16 +14,28 @@ const ALLOWED = new Set(["accepted", "rejected", "revise", "published"]);
 
 export async function POST(request) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== "admin" && session.user.role !== "editor")) {
+
+  // ✅ Only admin can access now
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
   const { paperId, decision } = await request.json();
+
   if (!paperId || !ALLOWED.has(decision)) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
+
   await connect();
-  const updated = await PaperModel.findByIdAndUpdate(paperId, { status: decision }, { new: true });
-  if (!updated) return NextResponse.json({ error: "Paper not found" }, { status: 404 });
+  const update = { status: decision };
+  if (decision === "published") {
+    update.publishedAt = new Date();
+  }
+  const updated = await PaperModel.findByIdAndUpdate(paperId, update, { new: true });
+  if (!updated) {
+    return NextResponse.json({ error: "Paper not found" }, { status: 404 });
+  }
+
   // Notify corresponding author (best-effort)
   try {
     const author = await UserModel.findById(updated.correspondingAuthor).select("email name");
@@ -37,19 +49,31 @@ export async function POST(request) {
           : decision === "rejected"
           ? "We regret to inform you your paper was not accepted."
           : `Status updated: ${decision}`;
+
       // Attach reviews (author-visible comments only)
       const { ReviewModel } = require("../../../../../models/Review");
       const reviews = await ReviewModel.find({ paperId: updated._id }).sort({ createdAt: 1 }).lean();
+
       if (reviews.length) {
         const comments = reviews
-          .map((r, i) => `<p><strong>Review ${i + 1}</strong>: ${r.comments || "(no comments)"}</p>\n<p>Recommendation: ${r.recommendation}</p>`)
+          .map(
+            (r, i) =>
+              `<p><strong>Review ${i + 1}</strong>: ${r.comments || "(no comments)"}</p>
+               <p>Recommendation: ${r.recommendation}</p>`
+          )
           .join("\n");
         body += `\n\n<p><strong>Reviews:</strong></p>${comments}`;
       }
-      await sendMail({ to: author.email, subject, html: `<p>Dear ${author.name || "Author"},</p><p>${body}</p>` }).catch(() => {});
+
+      await sendMail({
+        to: author.email,
+        subject,
+        html: `<p>Dear ${author.name || "Author"},</p><p>${body}</p>`
+      }).catch(() => {});
     }
-  } catch {}
+  } catch (err) {
+    console.error("Email notification failed:", err);
+  }
+
   return NextResponse.json({ ok: true, status: updated.status });
 }
-
-

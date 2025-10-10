@@ -28,7 +28,7 @@ export default function ArchivesPage() {
                 <div>
                   <p className="font-medium">{p.title}</p>
                   <p className="text-sm text-black">
-                    Published on: {new Date(p.createdAt).toLocaleDateString()}
+                    Published on: {new Date(p.publishedAt).toLocaleDateString()}
                   </p>
                 </div>
                 {p.fileUrl ? (

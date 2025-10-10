@@ -12,19 +12,22 @@ export async function GET(request) {
 
     await connect();
 
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
     // Use text search when a query is provided (requires text index)
     const findFilter = q
-      ? { $text: { $search: q }, status: "accepted" }
-      : { status: "accepted" };
+      ? { $text: { $search: q }, status: "published", publishedAt: { $lt: startOfMonth } }
+      : { status: "published", publishedAt: { $lt: startOfMonth } };
 
-    const projection = q ? { score: { $meta: "textScore" }, title: 1, fileUrl: 1, createdAt: 1 } : { title: 1, fileUrl: 1, createdAt: 1 };
+    const projection = q ? { score: { $meta: "textScore" }, title: 1, fileUrl: 1, publishedAt: 1 } : { title: 1, fileUrl: 1, publishedAt: 1 };
 
-    const sortSpec = q ? { score: { $meta: "textScore" }, createdAt: -1 } : { createdAt: -1 };
+    const sortSpec = q ? { score: { $meta: "textScore" }, publishedAt: -1 } : { publishedAt: -1 };
 
     const papers = await PaperModel.find(findFilter, projection)
       .sort(sortSpec)
-      .select("title fileUrl createdAt")
-      .sort({ createdAt: -1 })
+      .select("title fileUrl publishedAt")
       .limit(50)
       .lean();
 
@@ -33,7 +36,7 @@ export async function GET(request) {
         id: String(p._id),
         title: p.title,
         fileUrl: p.fileUrl || "",
-        createdAt: p.createdAt,
+        publishedAt: p.publishedAt,
       }))
     );
 

@@ -23,6 +23,8 @@ export default function EditorDashboard() {
   const statusColors = {
     submitted: "bg-blue-100 text-blue-700 ring-blue-200",
     "under-review": "bg-purple-100 text-purple-700 ring-purple-200",
+    "pending-approval": "bg-amber-100 text-amber-700 ring-amber-200",
+    "editor-rejected": "bg-orange-100 text-orange-700 ring-orange-200",
     accepted: "bg-green-100 text-green-700 ring-green-200",
     rejected: "bg-red-100 text-red-700 ring-red-200",
     revise: "bg-amber-100 text-amber-700 ring-amber-200"
@@ -31,14 +33,28 @@ export default function EditorDashboard() {
   async function makeDecision(paperId, decision) {
     setDeciding(paperId);
     try {
-      await fetch("/api/admin/decide", {
+      const res = await fetch("/api/editor/accepted", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paperId, decision })
       });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(data.error || "Failed to make decision");
+        setDeciding(null);
+        return;
+      }
+
+      // Show appropriate message based on role
+      if (data.requiresAdminApproval) {
+        alert("Your recommendation has been sent to admin for final approval.");
+      }
+
       mutate();
     } catch (err) {
-      alert("Failed to make decision");
+      alert("Failed to make decision: " + err.message);
     }
     setDeciding(null);
   }
@@ -62,7 +78,7 @@ export default function EditorDashboard() {
                     <h2 className="text-lg font-semibold text-slate-900 line-clamp-2">{p.title}</h2>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <span className={`rounded-full px-3 py-1 text-xs font-medium ring-1 ${statusColors[p.status] || statusColors.submitted}`}>
-                        {p.status}
+                        {p.status === "pending-approval" ? "Awaiting Admin" : p.status === "editor-rejected" ? "Editor Rejected" : p.status}
                       </span>
                       <span className={`rounded-full px-3 py-1 text-xs font-medium ring-1 ${p.screened ? "bg-green-100 text-green-700 ring-green-200" : "bg-slate-100 text-slate-600 ring-slate-200"}`}>
                         {p.screened ? "✓ Screened" : "Not Screened"}
@@ -122,10 +138,10 @@ export default function EditorDashboard() {
                   </button>
                   <button
                     onClick={() => makeDecision(p.id, "accepted")}
-                    disabled={deciding === p.id}
-                    className="rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700 ring-1 ring-green-200 transition-all hover:bg-green-100 disabled:opacity-50"
+                    disabled={deciding === p.id || p.status === "pending-approval"}
+                    className="rounded-lg bg-green-50 px-4 py-2 text-sm font-medium text-green-700 ring-1 ring-green-200 transition-all hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {deciding === p.id ? "Processing..." : "✓ Accept"}
+                    {deciding === p.id ? "Processing..." : p.status === "pending-approval" ? "✓ Recommended" : "✓ Recommend Accept"}
                   </button>
                   <button
                     onClick={() => makeDecision(p.id, "revise")}
@@ -136,10 +152,10 @@ export default function EditorDashboard() {
                   </button>
                   <button
                     onClick={() => makeDecision(p.id, "rejected")}
-                    disabled={deciding === p.id}
-                    className="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-700 ring-1 ring-red-200 transition-all hover:bg-red-100 disabled:opacity-50"
+                    disabled={deciding === p.id || p.status === "editor-rejected"}
+                    className="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-700 ring-1 ring-red-200 transition-all hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {deciding === p.id ? "Processing..." : "✕ Reject"}
+                    {deciding === p.id ? "Processing..." : p.status === "editor-rejected" ? "✕ Recommended Reject" : "✕ Recommend Reject"}
                   </button>
                   <button
                     onClick={() => setReviewsModal(p.id)}
@@ -148,6 +164,15 @@ export default function EditorDashboard() {
                     View Reviews
                   </button>
                 </div>
+
+                {/* Warning message for pending papers */}
+                {(p.status === "pending-approval" || p.status === "editor-rejected") && (
+                  <div className="mt-3 rounded-lg bg-amber-50 p-3 ring-1 ring-amber-200">
+                    <p className="text-xs text-amber-800">
+                      ⚠️ This paper is awaiting admin review for final decision
+                    </p>
+                  </div>
+                )}
               </div>
             ))
           ) : (
@@ -190,6 +215,7 @@ export default function EditorDashboard() {
   );
 }
 
+// AssignModal, ScreenModal, and ReviewsViewer components remain the same as in your original code
 function AssignModal({ paper, onClose, onAssigned }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -199,7 +225,6 @@ function AssignModal({ paper, onClose, onAssigned }) {
 
   async function searchReviewers() {
     if (!query.trim()) {
-      // If empty query, load all reviewers
       setLoading(true);
       const res = await fetch(`/api/admin/search-reviewers`);
       const data = await res.json();
@@ -238,7 +263,6 @@ function AssignModal({ paper, onClose, onAssigned }) {
     }
   }
 
-  // Load all reviewers on mount
   useEffect(() => {
     searchReviewers();
   }, []);
@@ -261,7 +285,6 @@ function AssignModal({ paper, onClose, onAssigned }) {
           </button>
         </div>
 
-        {/* Search Input */}
         <div className="mt-6 flex gap-2">
           <input
             type="text"
@@ -276,11 +299,10 @@ function AssignModal({ paper, onClose, onAssigned }) {
             disabled={loading}
             className="rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Searching..." : "Search"}
+            {loading ? "Searching..." : "Search Reviewers"}
           </button>
         </div>
 
-        {/* Results */}
         <div className="mt-6 max-h-96 space-y-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
           {results.length > 0 ? (
             results.map((r) => (
@@ -323,7 +345,6 @@ function AssignModal({ paper, onClose, onAssigned }) {
           )}
         </div>
 
-        {/* Selected Count */}
         {selected.length > 0 && (
           <div className="mt-4 rounded-lg bg-blue-50 p-3 ring-1 ring-blue-200">
             <p className="text-sm font-medium text-blue-900">
@@ -332,7 +353,6 @@ function AssignModal({ paper, onClose, onAssigned }) {
           </div>
         )}
 
-        {/* Action Buttons */}
         <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onClose}

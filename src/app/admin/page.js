@@ -269,8 +269,8 @@ function PapersPanel() {
               <button onClick={() => setViewPaper(p)} className="rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 ring-1 ring-indigo-200 transition-all hover:bg-indigo-100">
                 📄 View Details
               </button>
-              <button onClick={() => decide(p.id, "accepted")} className="rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 ring-1 ring-green-200 transition-all hover:bg-green-100">
-                ✓ Accept
+              <button onClick={() => decide(p.id, "published")} className="rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 ring-1 ring-green-200 transition-all hover:bg-green-100">
+                ✓ Publish
               </button>
               <button onClick={() => decide(p.id, "revise")} className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-amber-200 transition-all hover:bg-amber-100">
                 ↻ Revise

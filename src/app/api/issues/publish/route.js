@@ -33,7 +33,7 @@ export async function POST(request) {
       await PaperModel.findByIdAndUpdate(p._id, { doi });
     }
   }
-  await PaperModel.updateMany({ _id: { $in: paperIds } }, { status: "published", issueId: issue._id });
+  await PaperModel.updateMany({ _id: { $in: paperIds }, status: "accepted" }, { status: "published", publishedAt: new Date(), issueId: issue._id });
   issue.publishedAt = new Date();
   await issue.save();
   // Notify corresponding authors (best-effort)
