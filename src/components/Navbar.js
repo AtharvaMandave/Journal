@@ -125,7 +125,7 @@ function NavLinks({ onClick, mobile }) {
       {isOpen && (
         <div className={`${mobile 
           ? 'pl-4 mt-2 space-y-1' 
-          : 'absolute left-0 top-full mt-1 bg-white text-gray-800 shadow-lg rounded-md min-w-[14rem] py-2 z-50'
+          : 'absolute left-0 top-full pt-0 bg-white text-gray-800 shadow-lg rounded-md min-w-[14rem] py-2 z-50'
         }`}>
           {children}
         </div>
@@ -155,6 +155,7 @@ function NavLinks({ onClick, mobile }) {
       {/* About Dropdown */}
       <NavItem className="relative">
         <div
+          className="relative"
           onMouseEnter={() => !mobile && setAboutOpen(true)}
           onMouseLeave={() => !mobile && setAboutOpen(false)}
         >
@@ -181,6 +182,7 @@ function NavLinks({ onClick, mobile }) {
       {/* Author Dropdown */}
       <NavItem className="relative">
         <div
+          className="relative"
           onMouseEnter={() => !mobile && setAuthorOpen(true)}
           onMouseLeave={() => !mobile && setAuthorOpen(false)}
         >
@@ -212,6 +214,7 @@ function NavLinks({ onClick, mobile }) {
       {/* Archives Dropdown */}
       <NavItem className="relative">
         <div
+          className="relative"
           onMouseEnter={() => !mobile && setArchivesOpen(true)}
           onMouseLeave={() => !mobile && setArchivesOpen(false)}
         >
