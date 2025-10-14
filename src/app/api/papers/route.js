@@ -5,7 +5,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import mongooseModule from "../../../../lib/mongoose";
 import paperModule from "../../../../models/Paper";
 import userModule from "../../../../models/User";
-import { createPresignedUploadUrl } from "../../../../lib/s3";
+import { getSupabaseClient } from "../../../../lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { sendMail } from "../../../../lib/email";
 
@@ -63,28 +63,22 @@ export async function POST(request) {
   
       let computedFileUrl = fileUrl || "";
       if (file) {
+        const supabase = getSupabaseClient();
         const key = `papers/${corresponding._id}/${uuidv4()}-${file.name}`;
-        const bucket = process.env.R2_BUCKET || process.env.S3_BUCKET;
-        if (!bucket) throw new Error("R2_BUCKET (or S3_BUCKET) not configured");
-  
-        const uploadUrl = await createPresignedUploadUrl({
-          bucket,
-          key,
-          contentType: file.type,
-        });
-  
-        if (process.env.R2_PUBLIC_DOMAIN) {
-          // e.g. files.example.com (R2 custom domain)
-          computedFileUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`;
-        } else if (process.env.R2_ACCOUNT_ID) {
-          // r2 public URL (if made public via domain-less access)
-          computedFileUrl = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${bucket}/${key}`;
-        } else if (process.env.AWS_REGION) {
-          computedFileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        const bucket = process.env.NEXT_PUBLIC_SUPABASE_BUCKET || 'papers';
+
+        const { data, error } = await supabase.storage
+          .from(bucket)
+          .createSignedUploadUrl(key);
+
+        if (error) {
+          throw new Error(`Supabase signed URL error: ${error.message}`);
         }
-  
-        // If you’re returning early here, the Paper doc is never created 👀
-        return NextResponse.json({ uploadUrl, fileUrl: computedFileUrl });
+
+        const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(key);
+        computedFileUrl = publicUrl;
+
+        return NextResponse.json({ uploadUrl: data.signedUrl, fileUrl: computedFileUrl });
       }
   
       const submissionId = `TS-${Date.now().toString(36)}-${uuidv4().slice(0,8).toUpperCase()}`;
@@ -145,14 +139,22 @@ export async function PATCH(request) {
     // Handle optional new file upload via presigned URL request
     let newFileUrl = fileUrl || paper.fileUrl || "";
     if (file) {
+      const supabase = getSupabaseClient();
       const key = `papers/${paper.correspondingAuthor}/${uuidv4()}-${file.name}`;
-      const bucket = process.env.R2_BUCKET || process.env.S3_BUCKET;
-      if (!bucket) throw new Error("R2_BUCKET (or S3_BUCKET) not configured");
-      const uploadUrl = await createPresignedUploadUrl({ bucket, key, contentType: file.type });
-      if (process.env.R2_PUBLIC_DOMAIN) newFileUrl = `https://${process.env.R2_PUBLIC_DOMAIN}/${key}`;
-      else if (process.env.R2_ACCOUNT_ID) newFileUrl = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${bucket}/${key}`;
-      else if (process.env.AWS_REGION) newFileUrl = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-      return NextResponse.json({ uploadUrl, fileUrl: newFileUrl });
+            const bucket = process.env.NEXT_PUBLIC_SUPABASE_BUCKET || 'papers';
+
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .createSignedUploadUrl(key);
+
+      if (error) {
+        throw new Error(`Supabase signed URL error: ${error.message}`);
+      }
+
+      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(key);
+      newFileUrl = publicUrl;
+
+      return NextResponse.json({ uploadUrl: data.signedUrl, fileUrl: newFileUrl });
     }
 
     // Update paper metadata and reset workflow to submitted

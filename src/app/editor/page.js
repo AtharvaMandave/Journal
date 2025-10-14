@@ -10,6 +10,7 @@ export default function EditorDashboard() {
   const [modalPaper, setModalPaper] = useState(null);
   const [screenModal, setScreenModal] = useState(null);
   const [reviewsModal, setReviewsModal] = useState(null);
+  const [uploadModalPaper, setUploadModalPaper] = useState(null);
   const [deciding, setDeciding] = useState(null);
 
   if (error) return (
@@ -27,7 +28,8 @@ export default function EditorDashboard() {
     "editor-rejected": "bg-orange-100 text-orange-700 ring-orange-200",
     accepted: "bg-green-100 text-green-700 ring-green-200",
     rejected: "bg-red-100 text-red-700 ring-red-200",
-    revise: "bg-amber-100 text-amber-700 ring-amber-200"
+    revise: "bg-amber-100 text-amber-700 ring-amber-200",
+    "final-version-uploaded": "bg-teal-100 text-teal-700 ring-teal-200",
   };
 
   async function makeDecision(paperId, decision) {
@@ -38,9 +40,9 @@ export default function EditorDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paperId, decision })
       });
-      
+
       const data = await res.json();
-      
+
       if (!res.ok) {
         alert(data.error || "Failed to make decision");
         setDeciding(null);
@@ -57,6 +59,28 @@ export default function EditorDashboard() {
       alert("Failed to make decision: " + err.message);
     }
     setDeciding(null);
+  }
+
+  async function sendToAdmin(paperId) {
+    try {
+      const res = await fetch("/api/editor/send-to-admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paperId })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to send to admin");
+        return;
+      }
+
+      alert("Paper sent to admin for publication");
+      mutate();
+    } catch (err) {
+      alert("Failed to send to admin: " + err.message);
+    }
   }
 
   return (
@@ -78,7 +102,7 @@ export default function EditorDashboard() {
                     <h2 className="text-lg font-semibold text-slate-900 line-clamp-2">{p.title}</h2>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <span className={`rounded-full px-3 py-1 text-xs font-medium ring-1 ${statusColors[p.status] || statusColors.submitted}`}>
-                        {p.status === "pending-approval" ? "Awaiting Admin" : p.status === "editor-rejected" ? "Editor Rejected" : p.status}
+                        {p.status === "pending-approval" ? "Awaiting Admin" : p.status === "editor-rejected" ? "Editor Rejected" : p.status === "final-version-uploaded" ? "Final Version Uploaded" : p.status}
                       </span>
                       <span className={`rounded-full px-3 py-1 text-xs font-medium ring-1 ${p.screened ? "bg-green-100 text-green-700 ring-green-200" : "bg-slate-100 text-slate-600 ring-slate-200"}`}>
                         {p.screened ? "✓ Screened" : "Not Screened"}
@@ -92,22 +116,16 @@ export default function EditorDashboard() {
                   </div>
                   <div className="flex items-center gap-2">
                     {p.fileUrl && (
-                      <a 
-                        href={p.fileUrl} 
-                        target="_blank" 
+                      <a
+                        href={p.editorVersionUrl || p.fileUrl}
+                        target="_blank"
                         rel="noreferrer"
-                        className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-700"
                       >
-                        View PDF
+                        Open
                       </a>
                     )}
-                    <button
-                      onClick={() => setModalPaper(p)}
-                      className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                    >
-                      Assign Reviewers
-                    </button>
                   </div>
+
                 </div>
 
                 {/* Reviewer Invites */}
@@ -156,6 +174,19 @@ export default function EditorDashboard() {
                     className="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-700 ring-1 ring-red-200 transition-all hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {deciding === p.id ? "Processing..." : p.status === "editor-rejected" ? "✕ Recommended Reject" : "✕ Recommend Reject"}
+                  </button>
+                  <button
+                    onClick={() => setUploadModalPaper(p)}
+                    className="rounded-lg bg-sky-50 px-4 py-2 text-sm font-medium text-sky-700 ring-1 ring-sky-200 transition-all hover:bg-sky-100"
+                  >
+                    Upload New Version
+                  </button>
+                  <button
+                    onClick={() => sendToAdmin(p.id)}
+                    disabled={p.status !== "final-version-uploaded"}
+                    className="rounded-lg bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 ring-1 ring-teal-200 transition-all hover:bg-teal-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Send to Admin for Publication
                   </button>
                   <button
                     onClick={() => setReviewsModal(p.id)}
@@ -210,6 +241,17 @@ export default function EditorDashboard() {
             onClose={() => setReviewsModal(null)}
           />
         )}
+
+        {uploadModalPaper && (
+          <UploadModal
+            paper={uploadModalPaper}
+            onClose={() => setUploadModalPaper(null)}
+            onUploaded={() => {
+              mutate();
+              setUploadModalPaper(null);
+            }}
+          />
+        )}
       </div>
     </main>
   );
@@ -251,11 +293,11 @@ function AssignModal({ paper, onClose, onAssigned }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paperId: paper.id, reviewerIds: selected }),
       });
-      
+
       if (!response.ok) {
         throw new Error("Failed to assign reviewers");
       }
-      
+
       onAssigned();
     } catch (err) {
       alert("Failed to assign reviewers: " + err.message);
@@ -543,6 +585,92 @@ function ReviewsViewer({ paperId, onClose }) {
               ))}
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UploadModal({ paper, onClose, onUploaded }) {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleUpload() {
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
+
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("paperId", paper.id);
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/editor/upload-version", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to upload file");
+        setUploading(false);
+        return;
+      }
+
+      alert("File uploaded successfully");
+      onUploaded();
+    } catch (err) {
+      alert("Failed to upload file: " + err.message);
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl ring-1 ring-slate-900/10">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-slate-900">Upload New Version</h3>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Paper File
+            </label>
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="w-full rounded-lg border border-slate-300 p-3 text-sm shadow-sm transition-all placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-slate-300 px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="rounded-lg bg-slate-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {uploading ? "Uploading..." : "Upload"}
+          </button>
         </div>
       </div>
     </div>
