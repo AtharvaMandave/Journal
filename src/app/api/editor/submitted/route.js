@@ -21,12 +21,12 @@ export async function GET() {
   if (session.user.role === "editor") {
     // Editors see: submitted, under-review, and their own recommendations
     statusFilter = { 
-      $in: ["submitted", "under-review", "pending-approval", "editor-rejected"] 
+      $in: ["submitted", "under-review", "pending-approval", "editor-rejected", "final-version-uploaded", "ready-for-publication", "accepted"] 
     };
   } else {
     // Admins see: all papers including those pending approval
     statusFilter = { 
-      $in: ["submitted", "under-review", "pending-approval", "editor-rejected"] 
+      $in: ["submitted", "under-review", "pending-approval", "editor-rejected", "ready-for-publication"] 
     };
   }
   

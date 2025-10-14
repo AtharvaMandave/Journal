@@ -10,6 +10,8 @@ const PAPER_STATUSES = [
   "accepted",
   "rejected",
   "published",
+  "ready-for-publication",
+  "final-version-uploaded",
 ];
 
 const AuthorSubSchema = new Schema(
@@ -29,6 +31,10 @@ const PaperSchema = new Schema(
     correspondingAuthor: { type: Schema.Types.ObjectId, ref: "User", required: true },
     keywords: { type: [String], default: [] },
     fileUrl: { type: String },
+    editorVersionUrl: { type: String },
+    editorVersionOriginalFilename: { type: String },
+    finalVersionUrl: { type: String },
+    finalVersionOriginalFilename: { type: String },
     status: { type: String, enum: PAPER_STATUSES, default: "submitted", required: true },
     assignedReviewers: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     reviews: { type: [Schema.Types.ObjectId], ref: "Review", default: [] },

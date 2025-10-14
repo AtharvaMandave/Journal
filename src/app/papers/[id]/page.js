@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function PaperDetailPage({ params }) {
   await connect();
   const paper = await PaperModel.findById(params.id).lean();
-  if (!paper || !["accepted", "published"].includes(paper.status)) {
+  if (!paper || !["accepted", "published", "ready-for-publication"].includes(paper.status)) {
     return (
       <main className="p-8 sm:p-20">
         <h1 className="text-2xl font-semibold">Paper not available</h1>
@@ -32,7 +32,7 @@ export default async function PaperDetailPage({ params }) {
       </article>
       <div className="mt-6 flex items-center gap-3">
         {paper.fileUrl ? (
-          <a href={paper.fileUrl} className="inline-flex items-center rounded-2xl border px-4 py-2 text-sm" target="_blank" rel="noreferrer">Download PDF</a>
+          <a href={paper.fileUrl} className="inline-flex items-center rounded-2xl border px-4 py-2 text-sm" target="_blank" rel="noreferrer">Download Paper</a>
         ) : null}
       </div>
     </main>

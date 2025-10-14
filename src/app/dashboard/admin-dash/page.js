@@ -27,10 +27,10 @@ const PaperDecisionInterface = () => {
   const fetchPapers = async () => {
     try {
       // Replace with your actual papers endpoint
-      const response = await fetch('/api/papers');
+      const response = await fetch('/api/admin/search-papers');
       if (response.ok) {
         const data = await response.json();
-        setPapers(data.papers || []);
+        setPapers(data || []);
       }
     } catch (error) {
       console.error('Failed to fetch papers:', error);
