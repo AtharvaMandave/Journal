@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import useSWR from "swr";
 import Link from "next/link";
+
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -19,60 +20,101 @@ export default function DashboardPage() {
 
   if (status === "loading") {
     return (
-      <main className="p-8 sm:p-20 bg-black text-white">
-        <p>Loading...</p>
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 sm:p-20 text-gray-900">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
-      {/* <Link href='/dashboard/admin-dash'>Admin Dashboard</Link> */}
-      {session?.user ? (
-        <p className="mt-4 text-gray-300">
-          You are signed in as <span className="font-semibold">{session.user.role}</span>
-        </p>
-      ) : (
-        <p className="mt-4 text-gray-300">You are not signed in</p>
-      )}
+    <main className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6 py-6 flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="text-sm text-gray-600 hover:text-gray-900 font-medium"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
 
-      <button
-        onClick={() => signOut({ callbackUrl: "/" })}
-        className="mt-6 px-4 py-2 rounded border hover:bg-gray-100"
-      >
-        Sign out
-      </button>
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        {/* User info */}
+        {session?.user && (
+          <div className="mb-12">
+            <p className="text-gray-600 text-sm">Welcome back</p>
+            <p className="text-gray-900 font-medium mt-1">
+              {session.user.email || session.user.name}
+              {session.user.role && (
+                <span className="text-gray-500 font-normal">
+                  {" "}
+                  • {session.user.role}
+                </span>
+              )}
+            </p>
+          </div>
+        )}
 
-      <section className="mt-10">
-        <h2 className="text-xl font-medium">Your submissions</h2>
-        <div className="mt-4 grid gap-3">
-          {data && Array.isArray(data) && data.length > 0 ? (
-            data.map((p) => (
-              <div key={p.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{p.title}</p>
-                    <div className="mt-1 text-xs text-gray-600">
-                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1">Status: {p.status}</span>
+        {/* Submissions */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            Your submissions
+          </h2>
+
+          <div className="space-y-3">
+            {data && Array.isArray(data) && data.length > 0 ? (
+              data.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition"
+                >
+                  <div className="flex-1">
+                    <p className="text-gray-900 font-medium">{p.title}</p>
+                    {/* Paper ID displayed here */}
+                    <p className="text-xs text-gray-500 mt-1">
+                      Paper ID: {p.id}
+                    </p>
+
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">
+                        {p.status}
+                      </span>
+                      {p.fileUrl && (
+                        <a
+                          href={p.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          View PDF
+                        </a>
+                      )}
                     </div>
                   </div>
-                  {p.fileUrl ? (
-                    <a className="text-sm underline" href={p.fileUrl} target="_blank" rel="noreferrer">PDF</a>
-                  ) : null}
+
+                  {p.status === "revise" && (
+                    <Link
+                      href={`/submit?revise=${p.id}`}
+                      className="ml-4 px-3 py-1.5 text-sm text-gray-900 border border-gray-300 rounded hover:bg-gray-50 transition font-medium"
+                    >
+                      Revise
+                    </Link>
+                  )}
                 </div>
-                {p.status === "revise" ? (
-                  <div className="mt-3">
-                    <Link href={`/submit?revise=${p.id}`} className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50">Revise / Resubmit</Link>
-                  </div>
-                ) : null}
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-gray-400">No submissions yet.</p>
-          )}
-        </div>
-      </section>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No submissions yet.</p>
+            )}
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

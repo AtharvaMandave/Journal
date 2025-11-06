@@ -23,7 +23,7 @@ export default function Navbar() {
                 TECHNOSCHOLARS
               </div>
               <div className="text-xs text-green-100 -mt-1">
-                International Research Journal
+                Mangement System
               </div>
             </div>
           </Link>

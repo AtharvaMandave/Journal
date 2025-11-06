@@ -38,7 +38,7 @@ export default function PeerReviewProcess() {
                 Receive your unique <strong>Paper ID</strong> immediately after submission
               </StepDetail>
               <StepDetail icon={<Clock size={16} />}>
-                Track your paper's progress using the Paper ID through email updates
+                Track your paper&apos;s progress using the Paper ID through email updates
               </StepDetail>
             </ProcessStep>
 
@@ -282,7 +282,7 @@ export default function PeerReviewProcess() {
               <RightItem>Edit and translate as needed</RightItem>
               <RightItem>Create derivative works</RightItem>
               <RightItem>Make available in all media formats</RightItem>
-              <RightItem>Enforce copyright on author's behalf</RightItem>
+              <RightItem>Enforce copyright on author&apos;s behalf</RightItem>
             </ul>
           </div>
         </div>

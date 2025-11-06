@@ -1,71 +1,125 @@
 "use client";
-
 import { useState } from "react";
+import axios from "axios";
 import { Card, CardBody, Input, Label, Button, Badge } from "../../components/ui";
 
 export default function CheckStatusPage() {
-  const [email, setEmail] = useState("");
-  const [paperId, setPaperId] = useState("");
+  const [form, setForm] = useState({ email: "", paperId: "" });
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function submit(e) {
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setForm((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setResult(null);
     setLoading(true);
-    const res = await fetch("/api/public/check-status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, paperId }) });
-    const j = await res.json();
-    setLoading(false);
-    if (!res.ok) { setError(j.error || "Not found"); return; }
-    setResult(j);
-  }
+
+    try {
+      const { data } = await axios.post("/api/public/check-status", form);
+      setResult(data);
+    } catch (err) {
+      if (err.response) {
+        setError(err.response.data?.error || "Server error");
+      } else {
+        setError("Network error. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 sm:p-20">
-      <h1 className="text-2xl font-semibold text-gray-900">Check Paper Status</h1>
-      <Card className="mt-6 max-w-xl">
-        <CardBody>
-          <form onSubmit={submit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="pid">Paper ID</Label>
-              <Input id="pid" value={paperId} onChange={(e) => setPaperId(e.target.value)} required />
-            </div>
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            <Button disabled={loading} className="w-full">{loading ? "Checking..." : "Check"}</Button>
-          </form>
+    <main className="min-h-screen bg-gray-50 p-6 sm:p-16">
+      <div className="max-w-xl mx-auto">
+        <h1 className="text-3xl font-semibold text-gray-900 text-center mb-6">
+          Check Paper Status
+        </h1>
 
-          {result ? (
-            <div className="mt-6 rounded-2xl border bg-white p-4 shadow-sm">
-              <p className="text-sm text-gray-600">Title</p>
-              <p className="font-medium">{result.title}</p>
-              <div className="mt-3 flex items-center gap-2">
-                <p className="text-sm text-gray-600">Status</p>
-                <StatusBadge status={result.status} />
-              </div>
-            </div>
-          ) : null}
-        </CardBody>
-      </Card>
+        <Card>
+          <CardBody>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <FormField
+                id="email"
+                label="Email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+              <FormField
+                id="paperId"
+                label="Paper ID"
+                value={form.paperId}
+                onChange={handleChange}
+                required
+              />
+
+              {error && <p className="text-sm text-red-600">{error}</p>}
+
+              <Button disabled={loading} className="w-full">
+                {loading ? "Checking..." : "Check Status"}
+              </Button>
+            </form>
+
+            {result && <ResultCard result={result} />}
+          </CardBody>
+        </Card>
+      </div>
     </main>
   );
 }
 
-function StatusBadge({ status }) {
-  const map = {
-    submitted: "gray",
-    "under-review": "blue",
-    revise: "red",
-    accepted: "green",
-    rejected: "red",
-    published: "green",
-  };
-  return <Badge color={map[status] || "gray"}>{status}</Badge>;
+function FormField({ id, label, type = "text", value, onChange, required }) {
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        type={type}
+        value={value}
+        onChange={onChange}
+        required={required}
+      />
+    </div>
+  );
 }
 
+function ResultCard({ result }) {
+  return (
+    <div className="mt-6 rounded-2xl border bg-white p-5 shadow-sm">
+      <div className="space-y-2">
+        <div>
+          <p className="text-sm text-gray-600">Title</p>
+          <p className="font-medium text-gray-900">{result.title}</p>
+        </div>
 
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-gray-600">Status:</p>
+          <StatusBadge status={result.status} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }) {
+  const colors = {
+    submitted: "gray",
+    "under-review": "blue",
+    revise: "yellow",
+    accepted: "green",
+    rejected: "red",
+    published: "emerald",
+  };
+
+  const color = colors[status] || "gray";
+  const formatted = status.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return <Badge color={color}>{formatted}</Badge>;
+}

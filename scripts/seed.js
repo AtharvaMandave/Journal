@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { connect } = require("../lib/mongoose");

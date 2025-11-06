@@ -1,13 +1,13 @@
 // File: src/app/api/auth/signout-custom/route.js
-// Create this file in your project at the path shown above
+// Only use this if you need CUSTOM logic (audit logs, external APIs, etc.)
+// Otherwise, just use signOut() from next-auth/react directly
 
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../[...nextauth]/route"; // Correct path for your structure
+import { authOptions } from "../[...nextauth]/route";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    // Get the current session
     const session = await getServerSession(authOptions);
     
     if (!session) {
@@ -17,10 +17,11 @@ export async function POST(req) {
       );
     }
 
-    // Clear session - this depends on your session strategy
-    // For JWT strategy, the session will be cleared on the client side
-    // For database strategy, you might need to delete the session from DB
-    
+    // Add your custom logic here
+    // Example: Log audit trail, notify external services, etc.
+    // await logAuditTrail(session.user.id, "logout");
+    // await notifyExternalService(session.user.id);
+
     return NextResponse.json({ 
       success: true,
       message: "Signed out successfully" 

@@ -11,7 +11,6 @@
    node scripts/simulate_publication_flow.js
 */
 
-/* eslint-disable no-console */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();

@@ -97,6 +97,11 @@ function Form() {
   async function handleSubmit(e) {
     e.preventDefault();
     setMessage("");
+    if (!file) {
+      setMessage("A PDF file is required for submission.");
+      setLoading(false);
+      return;
+    }
     if (!agree) {
       setMessage("You must agree to the terms");
       return;
@@ -191,7 +196,7 @@ function Form() {
         <CoAuthors value={coAuthors} onChange={setCoAuthors} />
       </div>
       <div className="text-black">
-        <input aria-label="Upload PDF" type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        <input aria-label="Upload PDF" type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} required />
       </div>
       <label className="flex items-center gap-2 text-sm">
         <input className="text-black" type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />

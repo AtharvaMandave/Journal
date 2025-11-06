@@ -1,4 +1,5 @@
 import { CheckCircle, Users, Globe, Award, BookOpen, Clock, Shield, Eye } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutPage() {
   const features = [
@@ -38,6 +39,15 @@ export default function AboutPage() {
     { number: "15,000+", label: "Monthly Readers" },
     { number: "45", label: "Countries Represented" },
     { number: "4.2", label: "Average Impact Factor" }
+  ];
+
+  const infoItems = [
+    { title: "Aims & Scope", description: "Learn about our research focus areas and submission guidelines", link: "/aims-scope" },
+    { title: "Ethics & Integrity", description: "Our commitment to research ethics and publication standards", link: "/ethics" },
+    { title: "Peer Review Process", description: "Detailed information about our review methodology", link: "/peer-review" },
+    { title: "Copyright Policy", description: "Understanding licensing and author rights", link: "/copyright-policy" },
+    { title: "Publication Fees", description: "Transparent information about costs and waivers", link: "/publication-fees" },
+    { title: "Author Guidelines", description: "Complete submission and formatting requirements", link: "/publication-process" }
   ];
 
   return (
@@ -145,21 +155,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Links Section */}
+      {/* Additional Information Section with Links */}
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-8">
           <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Additional Information</h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {[
-                { title: "Aims & Scope", description: "Learn about our research focus areas and submission guidelines" },
-                { title: "Ethics & Integrity", description: "Our commitment to research ethics and publication standards" },
-                { title: "Peer Review Process", description: "Detailed information about our review methodology" },
-                { title: "Copyright Policy", description: "Understanding licensing and author rights" },
-                { title: "Publication Fees", description: "Transparent information about costs and waivers" },
-                { title: "Author Guidelines", description: "Complete submission and formatting requirements" }
-              ].map((item, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group">
+              {infoItems.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.link}
+                  className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group block"
+                >
                   <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                     {item.title}
                   </h3>
@@ -167,7 +174,7 @@ export default function AboutPage() {
                   <div className="mt-4 text-blue-600 text-sm font-medium group-hover:text-blue-800">
                     Learn More →
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -183,12 +190,14 @@ export default function AboutPage() {
             Join thousands of researchers who have chosen our journal for their groundbreaking work.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href='/submit'>
             <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors">
               Submit Manuscript
             </button>
-            <button className="border border-white text-white hover:bg-white hover:text-gray-900 font-semibold py-3 px-8 rounded-lg transition-colors">
+            </Link>
+            <Link href='/contact'><button className="border border-white text-white hover:bg-white hover:text-gray-900 font-semibold py-3 px-8 rounded-lg transition-colors">
               Contact Editorial Team
-            </button>
+            </button></Link>
           </div>
         </div>
       </section>

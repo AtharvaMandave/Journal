@@ -46,7 +46,7 @@ export default function PublicationEthics() {
           color="blue"
         >
           <ResponsibilityItem number="1">
-            Editors' decisions to accept or reject manuscripts should be based on <strong>importance, originality, clarity, and relevance</strong>. Manuscripts must be processed in a timely manner.
+            Editors&apos; decisions to accept or reject manuscripts should be based on <strong>importance, originality, clarity, and relevance</strong>. Manuscripts must be processed in a timely manner.
           </ResponsibilityItem>
           <ResponsibilityItem number="2">
             Editors must ensure appropriate reviewers are selected—individuals with relevant expertise, capable of critical evaluation, and free from competing interests.
@@ -140,7 +140,7 @@ export default function PublicationEthics() {
             Authors may be asked to provide raw data for editorial review and should retain data for a reasonable time after publication.
           </ResponsibilityItem>
           <ResponsibilityItem number="10">
-            Authors must ensure entirely original work, with proper citation or quotation of others' work and words.
+            Authors must ensure entirely original work, with proper citation or quotation of others&apos; work and words.
           </ResponsibilityItem>
           <ResponsibilityItem number="11">
             Authors should not publish the same research in multiple journals. Concurrent submission constitutes unethical behavior.
@@ -188,7 +188,7 @@ export default function PublicationEthics() {
             </p>
             <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded">
               <p className="text-sm text-gray-700 font-medium">
-                Plagiarism occurs when authors use others' work without permission, credit, or acknowledgment. Always credit sources and place your work in context.
+                Plagiarism occurs when authors use others&apos; work without permission, credit, or acknowledgment. Always credit sources and place your work in context.
               </p>
             </div>
           </HighlightBox>

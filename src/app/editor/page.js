@@ -114,7 +114,7 @@ export default function EditorDashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2  bg-black">
                     {p.fileUrl && (
                       <a
                         href={p.editorVersionUrl || p.fileUrl}
@@ -124,6 +124,12 @@ export default function EditorDashboard() {
                         Open
                       </a>
                     )}
+                    <button
+                      onClick={() => setModalPaper(p)}
+                      className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    >
+                      Assign Reviewers
+                    </button>
                   </div>
 
                 </div>
@@ -265,7 +271,7 @@ function AssignModal({ paper, onClose, onAssigned }) {
   const [loading, setLoading] = useState(false);
   const [assigning, setAssigning] = useState(false);
 
-  async function searchReviewers() {
+  const searchReviewers = useCallback(async () => {
     if (!query.trim()) {
       setLoading(true);
       const res = await fetch(`/api/admin/search-reviewers`);
@@ -279,7 +285,7 @@ function AssignModal({ paper, onClose, onAssigned }) {
     const data = await res.json();
     setResults(Array.isArray(data) ? data : []);
     setLoading(false);
-  }
+  }, [query]);
 
   async function assignReviewers() {
     if (selected.length === 0) {
@@ -307,7 +313,7 @@ function AssignModal({ paper, onClose, onAssigned }) {
 
   useEffect(() => {
     searchReviewers();
-  }, []);
+  }, [searchReviewers]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
