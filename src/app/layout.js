@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { Card } from "../components/ui";
 import { Twitter, Linkedin } from 'lucide-react';
 import Link from 'next/link';
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Analytics />
         <Providers>
           <Navbar />
           <div className="min-h-[calc(100vh-200px)] bg-gray-50/60">
